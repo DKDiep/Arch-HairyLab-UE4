@@ -11,6 +11,9 @@ class ARCHSHAIRYLAB_API AHairSegment : public AActor
 	GENERATED_BODY()
 	
 public:	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Mesh Components")
+	class UProceduralMeshComponent* mesh;
+
 	// Sets default values for this actor's properties
 	AHairSegment();
 
