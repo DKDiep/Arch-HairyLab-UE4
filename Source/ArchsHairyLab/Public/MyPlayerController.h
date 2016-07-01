@@ -5,6 +5,8 @@
 //Input
 #include "InputCoreTypes.h"
 
+#include "ProceduralMeshData.h"
+
 #include "GameFramework/PlayerController.h"
 #include "MyPlayerController.generated.h"
 
@@ -15,4 +17,7 @@ class AMyPlayerController : public APlayerController
 	
 	AMyPlayerController(const FObjectInitializer& ObjectInitializer);
 
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UProceduralMeshData* ProceduralMeshData;
 };
