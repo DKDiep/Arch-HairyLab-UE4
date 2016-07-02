@@ -20,4 +20,13 @@ class AMyPlayerController : public APlayerController
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UProceduralMeshData* ProceduralMeshData;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UProceduralMeshData* StartMeshData;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UProceduralMeshData* MiddleMeshData;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UProceduralMeshData* EndMeshData;
 };

@@ -6,6 +6,9 @@
 AMyPlayerController::AMyPlayerController(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
 	ProceduralMeshData = NewObject<UProceduralMeshData>();
+	StartMeshData = NewObject<UProceduralMeshData>();
+	MiddleMeshData = NewObject<UProceduralMeshData>();
+	EndMeshData = NewObject<UProceduralMeshData>();
 }
 
 
