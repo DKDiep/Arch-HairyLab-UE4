@@ -32,14 +32,24 @@ public:
 
 	// Data for connecting to components
 	UPROPERTY(BlueprintReadWrite)
-	FVector AnchorA;
+	FVector AnchorA = FVector(0,0,0);
 	UPROPERTY(BlueprintReadWrite)
-	FVector AnchorB;
+	FVector AnchorB = FVector(0,0,0);
 	UPROPERTY(BlueprintReadWrite)
 	TArray<FVector> EndPointsA;
 	UPROPERTY(BlueprintReadWrite)
 	TArray<FVector> EndPointsB;
+	UPROPERTY(BlueprintReadWrite)
+	FVector P1 = FVector(0,0,0);
+	UPROPERTY(BlueprintReadWrite)
+	FVector P2 = FVector(0,0,0);
 
 	UFUNCTION(BlueprintCallable, Category = "Prodecural Mesh Methods")
 	void CalculateEndPoints(TArray<FVector> Vertices);
+
+	UFUNCTION(BlueprintCallable, Category = "Procedural Mesh Methods")
+	void AssignPositions(FVector InP1, FVector InP2);
+
+	UFUNCTION(BlueprintCallable, Category = "Procedural Mesh Methods")
+	void MapVertex(FVector V, FVector Direction, FVector Normal);
 };

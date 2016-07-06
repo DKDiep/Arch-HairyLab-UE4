@@ -64,12 +64,12 @@ void AMyPlayerController::CalculateEndPoints(TArray<FVector> Vertices)
 		if (Vertices[i].Z > max)
 		{
 			max = Vertices[i].Z;
-			AnchorA = Vertices[i];
+			AnchorA = FVector(0.0f,0.0f,Vertices[i].Z);
 		}
 		if (Vertices[i].Z < min)
 		{
 			min = Vertices[i].Z;
-			AnchorB = Vertices[i];
+			AnchorB = FVector(0.0f,0.0f,Vertices[i].Z);
 		}
 	}
 	// Get all points that lie on ends
@@ -84,4 +84,32 @@ void AMyPlayerController::CalculateEndPoints(TArray<FVector> Vertices)
 			EndPointsB.Add(Vertices[i]);
 		}
 	}
+}
+
+void AMyPlayerController::AssignPositions(FVector InP1, FVector InP2)
+{
+	P1 = InP1;
+	P2 = InP2;
+}
+
+void AMyPlayerController::MapVertex(FVector V, FVector Direction, FVector Normal)
+{
+	// Find percentage distance between A to B
+	float VDistance = V.Z - AnchorA.Z;
+	float Distance = FVector::Dist(AnchorA, AnchorB);
+	float VRatio = VDistance / Distance;
+	// Get displacement vector from P1 to P2
+	FVector P3 = P2 - P1;
+	// From P1, add weighted displacement vector for vertical offset
+	FVector V2 = P1 + VRatio*P3;
+
+	// Get X direction
+	FVector DirX = FVector::CrossProduct(Direction, Normal);
+	// Apply X direction
+	V2 + DirX*V.X;
+
+	// Get Y direction
+	FVector DirY = DirX.RotateAngleAxis(90, FVector(0, 0, 1));
+	// Apply Y direction
+	V2 + DirY*V.Y;
 }
