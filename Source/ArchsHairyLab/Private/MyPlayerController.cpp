@@ -100,7 +100,7 @@ void AMyPlayerController::AssignPositions(FVector InP1, FVector InP2)
 FVector AMyPlayerController::MapVertex(FVector V, FVector Direction, FVector Normal)
 {
 	// Find percentage distance between A to B
-	float VDistance = V.Z - AnchorA.Z;
+	float VDistance = AnchorA.Z - V.Z;
 	float Distance = FVector::Dist(AnchorA, AnchorB);
 	float VRatio = VDistance / Distance;
 	// Get displacement vector from P1 to P2
@@ -108,15 +108,15 @@ FVector AMyPlayerController::MapVertex(FVector V, FVector Direction, FVector Nor
 	// From P1, add weighted displacement vector for vertical offset
 	FVector V2 = P1 + VRatio*P3;
 
-	// Get X direction
+	//Get X direction
 	FVector DirX = FVector::CrossProduct(Direction, Normal);
 	// Apply X direction
-	V2 + DirX*V.X;
+	V2 = V2 + DirX*V.X;
 
 	// Get Y direction
 	FVector DirY = DirX.RotateAngleAxis(90, FVector(0, 0, 1));
 	// Apply Y direction
-	V2 + DirY*V.Y;
-	return V;
-	//return V2;
+	V2 = V2 + DirY*V.Y;
+	//return V;
+	return V2;
 }
