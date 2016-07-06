@@ -54,5 +54,5 @@ public:
 	void AssignPositions(FVector InP1, FVector InP2);
 
 	UFUNCTION(BlueprintCallable, Category = "Procedural Mesh Methods")
-	void MapVertex(FVector V, FVector Direction, FVector Normal);
+	FVector MapVertex(FVector V, FVector Direction, FVector Normal);
 };

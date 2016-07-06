@@ -15,8 +15,8 @@ int AMyPlayerController::SetupBP()
 	EndMeshData = NewObject<UProceduralMeshData>();
 
 	// Create default mesh data for start, middle, end components
-	StartMeshData->Vertices.Add(FVector(-10.0f, 50.0f, 0.0f));
-	StartMeshData->Vertices.Add(FVector(10.0f, 50.0f, 0.0f));
+	StartMeshData->Vertices.Add(FVector(-10.0f, 0.0f, 50.0f));
+	StartMeshData->Vertices.Add(FVector(10.0f, 0.0f, 50.0f));
 	StartMeshData->Vertices.Add(FVector(-25.0f, 0.0f, 0.0f));
 	StartMeshData->Vertices.Add(FVector(25.0f, 0.0f, 0.0f));
 	StartMeshData->Triangles.Add(0);
@@ -30,8 +30,8 @@ int AMyPlayerController::SetupBP()
 	StartMeshData->UVs.Add(FVector2D(0.0f, 0.0f));
 	StartMeshData->UVs.Add(FVector2D(1.0f, 0.0f));
 
-	MiddleMeshData->Vertices.Add(FVector(-25.0f, 50.0f, 0.0f));
-	MiddleMeshData->Vertices.Add(FVector(25.0f, 50.0f, 0.0f));
+	MiddleMeshData->Vertices.Add(FVector(-25.0f, 0.0f, 50.0f));
+	MiddleMeshData->Vertices.Add(FVector(25.0f, 0.0f, 50.0f));
 	MiddleMeshData->Vertices.Add(FVector(-25.0f, 0.0f, 0.0f));
 	MiddleMeshData->Vertices.Add(FVector(25.0f, 0.0f, 0.0f));
 	MiddleMeshData->Triangles.Add(0);
@@ -45,8 +45,8 @@ int AMyPlayerController::SetupBP()
 	MiddleMeshData->UVs.Add(FVector2D(0.0f, 0.0f));
 	MiddleMeshData->UVs.Add(FVector2D(1.0f, 0.0f));
 
-	EndMeshData->Vertices.Add(FVector(-25.0f, 50.0f, 0.0f));
-	EndMeshData->Vertices.Add(FVector(25.0f, 50.0f, 0.0f));
+	EndMeshData->Vertices.Add(FVector(-25.0f, 0.0f, 50.0f));
+	EndMeshData->Vertices.Add(FVector(25.0f, 0.0f, 50.0f));
 	EndMeshData->Vertices.Add(FVector(0.0f, 0.0f, 0.0f));
 	EndMeshData->Triangles.Add(0);
 	EndMeshData->Triangles.Add(1);
@@ -97,7 +97,7 @@ void AMyPlayerController::AssignPositions(FVector InP1, FVector InP2)
 	P2 = InP2;
 }
 
-void AMyPlayerController::MapVertex(FVector V, FVector Direction, FVector Normal)
+FVector AMyPlayerController::MapVertex(FVector V, FVector Direction, FVector Normal)
 {
 	// Find percentage distance between A to B
 	float VDistance = V.Z - AnchorA.Z;
@@ -117,4 +117,6 @@ void AMyPlayerController::MapVertex(FVector V, FVector Direction, FVector Normal
 	FVector DirY = DirX.RotateAngleAxis(90, FVector(0, 0, 1));
 	// Apply Y direction
 	V2 + DirY*V.Y;
+	return V;
+	//return V2;
 }
