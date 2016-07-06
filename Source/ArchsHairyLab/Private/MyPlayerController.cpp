@@ -5,6 +5,10 @@
 
 AMyPlayerController::AMyPlayerController(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
+}
+
+int AMyPlayerController::SetupBP()
+{
 	ProceduralMeshData = NewObject<UProceduralMeshData>();
 	StartMeshData = NewObject<UProceduralMeshData>();
 	MiddleMeshData = NewObject<UProceduralMeshData>();
@@ -52,6 +56,7 @@ AMyPlayerController::AMyPlayerController(const FObjectInitializer& ObjectInitial
 	EndMeshData->UVs.Add(FVector2D(0.5f, 0.0f));
 
 	CalculateEndPoints(MiddleMeshData->Vertices);
+	return 0;
 }
 
 void AMyPlayerController::CalculateEndPoints(TArray<FVector> Vertices)

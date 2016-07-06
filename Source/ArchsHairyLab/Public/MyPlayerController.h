@@ -44,6 +44,9 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	FVector P2 = FVector(0,0,0);
 
+	UFUNCTION(BlueprintCallable, Category = "Procedural Mesh Methods")
+	int SetupBP();
+
 	UFUNCTION(BlueprintCallable, Category = "Prodecural Mesh Methods")
 	void CalculateEndPoints(TArray<FVector> Vertices);
 
