@@ -50,6 +50,38 @@ AMyPlayerController::AMyPlayerController(const FObjectInitializer& ObjectInitial
 	EndMeshData->UVs.Add(FVector2D(0.0f, 1.0f));
 	EndMeshData->UVs.Add(FVector2D(1.0f, 1.0f));
 	EndMeshData->UVs.Add(FVector2D(0.5f, 0.0f));
+
+	CalculateEndPoints(MiddleMeshData->Vertices);
 }
 
-
+void AMyPlayerController::CalculateEndPoints(TArray<FVector> Vertices)
+{
+	float min = FLT_MAX;
+	float max = FLT_MIN;
+	// First calculate ends
+	for (int i = 0; i < Vertices.Num(); i++)
+	{
+		if (Vertices[i].Z > max)
+		{
+			max = Vertices[i].Z;
+			AnchorA = Vertices[i];
+		}
+		if (Vertices[i].Z < min)
+		{
+			min = Vertices[i].Z;
+			AnchorB = Vertices[i];
+		}
+	}
+	// Get all points that lie on ends
+	for (int i = 0; i < Vertices.Num(); i++)
+	{
+		if (Vertices[i].Z == max)
+		{
+			EndPointsA.Add(Vertices[i]);
+		}
+		if (Vertices[i].Z == min)
+		{
+			EndPointsB.Add(Vertices[i]);
+		}
+	}
+}

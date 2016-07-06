@@ -29,4 +29,17 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UProceduralMeshData* EndMeshData;
+
+	// Data for connecting to components
+	UPROPERTY(BlueprintReadWrite)
+	FVector AnchorA;
+	UPROPERTY(BlueprintReadWrite)
+	FVector AnchorB;
+	UPROPERTY(BlueprintReadWrite)
+	TArray<FVector> EndPointsA;
+	UPROPERTY(BlueprintReadWrite)
+	TArray<FVector> EndPointsB;
+
+	UFUNCTION(BlueprintCallable, Category = "Prodecural Mesh Methods")
+	void CalculateEndPoints(TArray<FVector> Vertices);
 };
