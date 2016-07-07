@@ -120,3 +120,11 @@ FVector AMyPlayerController::MapVertex(FVector V, FVector Direction, FVector Nor
 	//return V;
 	return V2;
 }
+
+FVector AMyPlayerController::GenerateMeshData()
+{
+	for (int i = 0; i < MiddleMeshData->Vertices.Num()-1; i++)
+	{
+		//MapVertex(MiddleMeshData->Vertices)
+	}
+}

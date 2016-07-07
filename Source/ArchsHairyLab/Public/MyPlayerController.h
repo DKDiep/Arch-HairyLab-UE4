@@ -55,4 +55,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Procedural Mesh Methods")
 	FVector MapVertex(FVector V, FVector Direction, FVector Normal);
+
+	UFUNCTION(BlueprintCallable, Category = "Procedural Mesh Methods")
+	FVector GenerateMeshData(FVector V, FVector Direction, FVector Normal);
 };
