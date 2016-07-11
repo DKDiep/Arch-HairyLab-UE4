@@ -4,6 +4,7 @@
 #include "HairSegment.h"
 
 #include "ProceduralMeshComponent.h"
+#include "Runtime/Engine/Classes/Components/SplineComponent.h"
 
 // Sets default values
 AHairSegment::AHairSegment()
@@ -11,8 +12,11 @@ AHairSegment::AHairSegment()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	mesh = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("GeneratedMesh"));
-	mesh->AttachTo(RootComponent);
+	ProceduralMesh = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("GeneratedMesh"));
+	RootComponent = ProceduralMesh;
+
+	Spline = CreateDefaultSubobject<USplineComponent>(TEXT("Spline"));
+	Spline->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned

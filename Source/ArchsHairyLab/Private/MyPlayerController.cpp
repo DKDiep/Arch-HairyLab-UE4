@@ -97,7 +97,7 @@ void AMyPlayerController::AssignPositions(FVector InP1, FVector InP2)
 	P2 = InP2;
 }
 
-FVector AMyPlayerController::MapVertex(FVector V, FVector Direction, FVector Normal, float Weight)
+FVector AMyPlayerController::MapVertex(FVector V, FVector Direction, FVector Normal, float XWidth, float YWidth, float Weight)
 {
 	// Find percentage distance between A to B
 	float VDistance = AnchorA.Z - V.Z;

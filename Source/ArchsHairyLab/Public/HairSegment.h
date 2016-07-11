@@ -12,7 +12,10 @@ class ARCHSHAIRYLAB_API AHairSegment : public AActor
 	
 public:	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Mesh Components")
-	class UProceduralMeshComponent* mesh;
+	class UProceduralMeshComponent* ProceduralMesh;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Spline Components")
+	class USplineComponent* Spline;
 
 	// Sets default values for this actor's properties
 	AHairSegment();
