@@ -97,7 +97,7 @@ void AMyPlayerController::AssignPositions(FVector InP1, FVector InP2)
 	P2 = InP2;
 }
 
-FVector AMyPlayerController::MapVertex(FVector V, FVector Direction, FVector Normal)
+FVector AMyPlayerController::MapVertex(FVector V, FVector Direction, FVector Normal, float Weight)
 {
 	// Find percentage distance between A to B
 	float VDistance = AnchorA.Z - V.Z;
@@ -111,12 +111,12 @@ FVector AMyPlayerController::MapVertex(FVector V, FVector Direction, FVector Nor
 	//Get X direction
 	FVector DirX = FVector::CrossProduct(Direction, Normal);
 	// Apply X direction
-	V2 = V2 + DirX*V.X;
+	V2 = V2 + (DirX*V.X*Weight);
 
 	// Get Y direction
 	FVector DirY = DirX.RotateAngleAxis(90, FVector(0, 0, 1));
 	// Apply Y direction
-	V2 = V2 + DirY*V.Y;
+	V2 = V2 + (DirY*V.Y*Weight);
 	//return V;
 	return V2;
 }
