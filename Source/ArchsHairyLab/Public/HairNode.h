@@ -20,6 +20,9 @@ public:
 	// Called every frame
 	virtual void Tick( float DeltaSeconds ) override;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Mesh Components")
+	class UStaticMeshComponent* StaticMesh;
+
 	UPROPERTY(BlueprintReadWrite, Category = "Node Variables")
 	class AHairSegment* Segment;
 
