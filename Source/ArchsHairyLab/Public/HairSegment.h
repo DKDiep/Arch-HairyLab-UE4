@@ -17,6 +17,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Spline Components")
 	class USplineComponent* Spline;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Segment Variables")
+	TArray<FVector> Normals;
+
 	// Sets default values for this actor's properties
 	AHairSegment();
 
