@@ -11,10 +11,10 @@ class ARCHSHAIRYLAB_API AHairSegment : public AActor
 	GENERATED_BODY()
 	
 public:	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Mesh Components")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Mesh Components")
 	class UProceduralMeshComponent* ProceduralMesh;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Spline Components")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Spline Components")
 	class USplineComponent* Spline;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Segment Variables")
