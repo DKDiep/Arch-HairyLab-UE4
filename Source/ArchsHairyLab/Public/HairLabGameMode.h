@@ -19,4 +19,7 @@ class ARCHSHAIRYLAB_API AHairLabGameMode : public AGameMode
 public:
 	UPROPERTY(BlueprintReadWrite)
 	class AHair* Hair;
+
+	UPROPERTY(BlueprintReadWrite)
+	class AMyPlayerController* Controller;
 };

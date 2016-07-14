@@ -4,6 +4,7 @@
 #include "HairLabGameMode.h"
 
 #include "Hair.h"
+#include "MyPlayerController.h"
 
 AHairLabGameMode::AHairLabGameMode(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -22,14 +23,18 @@ AHairLabGameMode::AHairLabGameMode(const FObjectInitializer& ObjectInitializer) 
 	/*PlayerStateClass = ;
 	GameStateClass = ;
 	SpectatorClass = ;*/
-
-	// Create hair object
+#
 	//Hair = (AHair*)GetWorld()->SpawnActor<AHair>(AHair::StaticClass(), FVector(0.0f,0.0f,0.0f), FRotator(0.0f));
 	UWorld* const World = GetWorld();
 	if (World) {
+		// Spawn hair object
 		FActorSpawnParameters SpawnParams;
 		Hair = World->SpawnActor<AHair>(AHair::StaticClass(), FVector(0.0f,0.0f,0.0f), FRotator(0.0f), SpawnParams);
+
+		// Get player controllers
+		Controller = Cast<AMyPlayerController>(World->GetFirstPlayerController());
 	}
+
 
 }
 
