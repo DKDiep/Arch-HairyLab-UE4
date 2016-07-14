@@ -8,8 +8,16 @@
 AHairLayer::AHairLayer()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
+}
+
+AHairLayer::AHairLayer(FName InName, int InId)
+{
+	PrimaryActorTick.bCanEverTick = false;
+
+	Name = InName;
+	Id = InId;
 }
 
 // Called when the game starts or when spawned
@@ -18,11 +26,3 @@ void AHairLayer::BeginPlay()
 	Super::BeginPlay();
 	
 }
-
-// Called every frame
-void AHairLayer::Tick( float DeltaTime )
-{
-	Super::Tick( DeltaTime );
-
-}
-

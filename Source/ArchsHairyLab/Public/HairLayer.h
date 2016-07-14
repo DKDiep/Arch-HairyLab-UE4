@@ -14,13 +14,11 @@ public:
 	// Sets default values for this actor's properties
 	AHairLayer();
 
+	AHairLayer(FName InName, int InId);
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	
-	// Called every frame
-	virtual void Tick( float DeltaSeconds ) override;
 
-public:
 	UPROPERTY(BlueprintReadWrite)
 	FName Name;
 
