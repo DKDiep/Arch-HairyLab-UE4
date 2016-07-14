@@ -16,5 +16,7 @@ class ARCHSHAIRYLAB_API AHairLabGameMode : public AGameMode
 
 	virtual void StartPlay() override;
 	
-	
+public:
+	UPROPERTY(BlueprintReadWrite)
+	class AHair* Hair;
 };

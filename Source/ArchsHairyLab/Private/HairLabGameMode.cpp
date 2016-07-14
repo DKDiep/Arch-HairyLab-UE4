@@ -3,6 +3,8 @@
 #include "ArchsHairyLab.h"
 #include "HairLabGameMode.h"
 
+#include "Hair.h"
+
 AHairLabGameMode::AHairLabGameMode(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -20,6 +22,15 @@ AHairLabGameMode::AHairLabGameMode(const FObjectInitializer& ObjectInitializer) 
 	/*PlayerStateClass = ;
 	GameStateClass = ;
 	SpectatorClass = ;*/
+
+	// Create hair object
+	//Hair = (AHair*)GetWorld()->SpawnActor<AHair>(AHair::StaticClass(), FVector(0.0f,0.0f,0.0f), FRotator(0.0f));
+	UWorld* const World = GetWorld();
+	if (World) {
+		FActorSpawnParameters SpawnParams;
+		Hair = World->SpawnActor<AHair>(AHair::StaticClass(), FVector(0.0f,0.0f,0.0f), FRotator(0.0f), SpawnParams);
+	}
+
 }
 
 // Called when the game starts or when spawned
