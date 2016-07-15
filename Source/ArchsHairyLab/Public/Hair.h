@@ -22,5 +22,11 @@ public:
 	TArray<class AHairLayer*> HairLayers;
 	
 	UPROPERTY(BlueprintReadWrite)
-	float GlobalWidth = 100.0f;
+	float GlobalXWidth = 100.0f;
+
+	UPROPERTY(BlueprintReadWrite)
+	float GlobalYWidth = 10.0f;
+
+	UFUNCTION(BlueprintCallable, Category = "Procedural Mesh Generation")
+	AHairSegment* SpawnSegment();
 };

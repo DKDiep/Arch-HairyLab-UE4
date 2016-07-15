@@ -4,8 +4,10 @@
 #include "Hair.h"
 
 #include "HairLayer.h"
+#include "HairSegment.h"
+#include "MyPlayerController.h"
+#include "Head.h"
 
-// Sets default values
 AHair::AHair()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -13,6 +15,8 @@ AHair::AHair()
 
 	// Create default layer
 	AHairLayer* DefaultLayer = NewObject<AHairLayer>();
+	DefaultLayer->Name = FName("Layer 0");
+	DefaultLayer->Id = 0;
 	HairLayers.Add(DefaultLayer);
 }
 
@@ -21,4 +25,30 @@ void AHair::BeginPlay()
 {
 	Super::BeginPlay();
 	
+}
+
+AHairSegment* AHair::SpawnSegment()
+{
+	UWorld* const World = GetWorld();
+	if (World) {
+		// Get player controllers
+		AMyPlayerController* Controller = Cast<AMyPlayerController>(World->GetFirstPlayerController());
+
+		if (Controller)
+		{
+			// Set controller cursor hit result
+			Controller->GetHitResultUnderCursorByChannel(UEngineTypes::ConvertToTraceType(ECC_Camera), true, Controller->HitResult);
+
+			// If hit head mesh
+			if (Controller->HitResult.Actor->GetClass()->IsChildOf(AHead::StaticClass()))
+			{
+				// Spawn hair object
+				FActorSpawnParameters SpawnParams;
+				Controller->TargetSegment = World->SpawnActor<AHairSegment>(AHairSegment::StaticClass(), FVector(0.0f, 0.0f, 0.0f), FRotator(0.0f), SpawnParams);
+
+			}
+		}
+	}
+
+	return NULL;
 }

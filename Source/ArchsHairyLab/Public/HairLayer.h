@@ -14,8 +14,6 @@ public:
 	// Sets default values for this actor's properties
 	AHairLayer();
 
-	AHairLayer(FName InName, int InId);
-
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
@@ -30,4 +28,10 @@ public:
 
 	UPROPERTY(BlueprintReadWrite)
 	bool IsVisible = true;
+
+	UPROPERTY(BlueprintReadWrite)
+	float LayerXOffset = 0.0f;
+
+	UPROPERTY(BlueprintReadWrite)
+	float LayerYOffset = 0.0f;
 };

@@ -12,14 +12,6 @@ AHairLayer::AHairLayer()
 
 }
 
-AHairLayer::AHairLayer(FName InName, int InId)
-{
-	PrimaryActorTick.bCanEverTick = false;
-
-	Name = InName;
-	Id = InId;
-}
-
 // Called when the game starts or when spawned
 void AHairLayer::BeginPlay()
 {

@@ -23,8 +23,7 @@ AHairLabGameMode::AHairLabGameMode(const FObjectInitializer& ObjectInitializer) 
 	/*PlayerStateClass = ;
 	GameStateClass = ;
 	SpectatorClass = ;*/
-#
-	//Hair = (AHair*)GetWorld()->SpawnActor<AHair>(AHair::StaticClass(), FVector(0.0f,0.0f,0.0f), FRotator(0.0f));
+
 	UWorld* const World = GetWorld();
 	if (World) {
 		// Spawn hair object
