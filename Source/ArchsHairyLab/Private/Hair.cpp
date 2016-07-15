@@ -5,6 +5,7 @@
 
 #include "HairLayer.h"
 #include "HairSegment.h"
+#include "HairNode.h"
 #include "MyPlayerController.h"
 #include "Head.h"
 
@@ -50,6 +51,11 @@ AHairSegment* AHair::SpawnSegment()
 		// Setup new segment
 		Controller->TargetSegment->AddSplinePoint(Controller->HitResult.Location);
 		Controller->TargetSegment->Normals.Add(Controller->HitResult.Normal);
+
+		// Spawn node object
+		Controller->TargetNode = World->SpawnActor<AHairNode>(AHairNode::StaticClass(), Controller->HitResult.Location, FRotator(0.0f), SpawnParams);
+		if (Controller->TargetNode)
+			Controller->TargetNode->SetActorScale3D(FVector(0.1f, 0.1f, 0.1f));
 
 		// Add hair segment to current layer
 		if (!Controller->TargetLayer)

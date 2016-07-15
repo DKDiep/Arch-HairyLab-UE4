@@ -7,11 +7,13 @@
 // Sets default values
 AHairNode::AHairNode()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
 	RootComponent = StaticMesh;
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> TmpMesh(TEXT("StaticMesh'/Engine/EngineMeshes/Sphere.Sphere'"));
+	if (TmpMesh.Succeeded())
+		StaticMesh->SetStaticMesh(TmpMesh.Object);
 }
 
 // Called when the game starts or when spawned

@@ -18,9 +18,9 @@ AHairSegment::AHairSegment()
 	Spline->SetupAttachment(RootComponent);
 	Spline->ClearSplinePoints();
 
-	static ConstructorHelpers::FObjectFinder<UMaterialInterface> MTemp(TEXT("MaterialInterface'/Game/Materials/M_Test.M_Test'"));
-	if (MTemp.Succeeded())
-		Material = MTemp.Object;
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> TmpMat(TEXT("MaterialInterface'/Game/Materials/M_Test.M_Test'"));
+	if (TmpMat.Succeeded())
+		Material = TmpMat.Object;
 
 	if (Material)
 		SetSegmentMaterial(0, Material);
