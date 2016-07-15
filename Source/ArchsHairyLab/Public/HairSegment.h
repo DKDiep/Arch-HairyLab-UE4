@@ -20,6 +20,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Segment Variables")
 	TArray<FVector> Normals;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Segment Variables")
+	TArray<class AHairNode*> Nodes;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Segment Variables")
 	UMaterialInterface* Material;
 

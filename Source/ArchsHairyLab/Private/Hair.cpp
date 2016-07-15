@@ -31,38 +31,75 @@ void AHair::BeginPlay()
 AHairSegment* AHair::SpawnSegment()
 {
 	UWorld* const World = GetWorld();
-	if (World) {
-		// Get player controllers
-		AMyPlayerController* Controller = Cast<AMyPlayerController>(World->GetFirstPlayerController());
+	if (!World)
+		return NULL;
 
-		if (!Controller)
-			return NULL;
+	// Get player controllers
+	AMyPlayerController* Controller = Cast<AMyPlayerController>(World->GetFirstPlayerController());
 
-		// Set controller cursor hit result
-		Controller->GetHitResultUnderCursorByChannel(UEngineTypes::ConvertToTraceType(ECC_Camera), true, Controller->HitResult);
+	if (!Controller)
+		return NULL;
 
-		// Only proceed if hit head mesh
-		if (!Controller->HitResult.Actor->IsA(AHead::StaticClass()))
-			return NULL;
+	// Set controller cursor hit result
+	Controller->GetHitResultUnderCursorByChannel(UEngineTypes::ConvertToTraceType(ECC_Camera), true, Controller->HitResult);
 
-		// Spawn segment object
-		FActorSpawnParameters SpawnParams;
-		Controller->TargetSegment = World->SpawnActor<AHairSegment>(AHairSegment::StaticClass(), FVector(0.0f, 0.0f, 0.0f), FRotator(0.0f), SpawnParams);
-		// Setup new segment
-		Controller->TargetSegment->AddSplinePoint(Controller->HitResult.Location);
-		Controller->TargetSegment->Normals.Add(Controller->HitResult.Normal);
+	// Only proceed if hit head mesh
+	if (!Controller->HitResult.Actor->IsA(AHead::StaticClass()))
+		return NULL;
 
-		// Spawn node object
-		Controller->TargetNode = World->SpawnActor<AHairNode>(AHairNode::StaticClass(), Controller->HitResult.Location, FRotator(0.0f), SpawnParams);
-		if (Controller->TargetNode)
-			Controller->TargetNode->SetActorScale3D(FVector(0.03f, 0.03f, 0.03f));
+	// Spawn segment object
+	FActorSpawnParameters SpawnParams;
+	Controller->TargetSegment = World->SpawnActor<AHairSegment>(AHairSegment::StaticClass(), FVector(0.0f, 0.0f, 0.0f), FRotator(0.0f), SpawnParams);
+	// Setup new segment
+	Controller->TargetSegment->AddSplinePoint(Controller->HitResult.Location);
+	Controller->TargetSegment->Normals.Add(Controller->HitResult.Normal);
 
-		// Add hair segment to current layer
-		if (!Controller->TargetLayer)
-			return Controller->TargetSegment;
+	SpawnNode(Controller, World);
 
-		Controller->TargetLayer->Segments.Add(Controller->TargetSegment);
-	}
+	// Add hair segment to current layer
+	if (!Controller->TargetLayer)
+		return Controller->TargetSegment;
 
-	return NULL;
+	Controller->TargetLayer->Segments.Add(Controller->TargetSegment);
+
+	return Controller->TargetSegment;
+}
+
+
+void AHair::ExtendSegment()
+{
+	UWorld* const World = GetWorld();
+	if (!World)
+		return;
+
+	// Get player controllers
+	AMyPlayerController* Controller = Cast<AMyPlayerController>(World->GetFirstPlayerController());
+
+	if (!Controller)
+		return;
+
+	if (!Controller->TargetSegment)
+		return;
+
+	// Set controller cursor hit result
+	Controller->GetHitResultUnderCursorByChannel(UEngineTypes::ConvertToTraceType(ECC_Camera), true, Controller->HitResult);
+
+	Controller->TargetSegment->AddSplinePoint(Controller->HitResult.Location);
+	Controller->TargetSegment->Normals.Add(Controller->HitResult.Normal);
+
+	SpawnNode(Controller, World);
+}
+
+AHairNode* AHair::SpawnNode(AMyPlayerController* Controller, UWorld* World)
+{
+	if (!Controller || !World)
+		return NULL;
+
+	// Spawn node object
+	FActorSpawnParameters SpawnParams;
+	Controller->TargetNode = World->SpawnActor<AHairNode>(AHairNode::StaticClass(), Controller->HitResult.Location, FRotator(0.0f), SpawnParams);
+	if (Controller->TargetNode)
+		Controller->TargetNode->SetActorScale3D(FVector(0.03f, 0.03f, 0.03f));
+
+	return Controller->TargetNode;
 }

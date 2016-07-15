@@ -29,4 +29,10 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Procedural Mesh Generation")
 	AHairSegment* SpawnSegment();
+
+	UFUNCTION(BlueprintCallable, Category = "Procedural Mesh Generation")
+	void ExtendSegment();
+
+	UFUNCTION(BlueprintCallable, Category = "Procedural Mesh Generation")
+	AHairNode* SpawnNode(AMyPlayerController* Controller, UWorld* World);
 };

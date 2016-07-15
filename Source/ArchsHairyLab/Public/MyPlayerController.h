@@ -58,6 +58,9 @@ public:
 
 	// Data for usage
 	UPROPERTY(BlueprintReadWrite)
+	class AHair* Hair;
+	
+	UPROPERTY(BlueprintReadWrite)
 	FHitResult HitResult = FHitResult();
 
 	UPROPERTY(BlueprintReadWrite)
