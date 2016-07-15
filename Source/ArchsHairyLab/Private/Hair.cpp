@@ -55,7 +55,7 @@ AHairSegment* AHair::SpawnSegment()
 		// Spawn node object
 		Controller->TargetNode = World->SpawnActor<AHairNode>(AHairNode::StaticClass(), Controller->HitResult.Location, FRotator(0.0f), SpawnParams);
 		if (Controller->TargetNode)
-			Controller->TargetNode->SetActorScale3D(FVector(0.1f, 0.1f, 0.1f));
+			Controller->TargetNode->SetActorScale3D(FVector(0.03f, 0.03f, 0.03f));
 
 		// Add hair segment to current layer
 		if (!Controller->TargetLayer)
