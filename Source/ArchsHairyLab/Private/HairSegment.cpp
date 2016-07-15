@@ -17,6 +17,13 @@ AHairSegment::AHairSegment()
 	Spline = CreateDefaultSubobject<USplineComponent>(TEXT("Spline"));
 	Spline->SetupAttachment(RootComponent);
 	Spline->ClearSplinePoints();
+
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> MTemp(TEXT("MaterialInterface'/Game/Materials/M_Test.M_Test'"));
+	if (MTemp.Succeeded())
+		Material = MTemp.Object;
+
+	if (Material)
+		SetSegmentMaterial(0, Material);
 }
 
 void AHairSegment::AddSplinePoint(FVector Location)

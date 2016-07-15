@@ -50,13 +50,6 @@ AHairSegment* AHair::SpawnSegment()
 		// Setup new segment
 		Controller->TargetSegment->AddSplinePoint(Controller->HitResult.Location);
 		Controller->TargetSegment->Normals.Add(Controller->HitResult.Normal);
-		//UMaterial* MTemp;
-		//static ConstructorHelpers::FObjectFinder<UMaterial> MTemp(TEXT("'Material'/Game/Materials/M_Test.M_Test'"));
-		static ConstructorHelpers::FObjectFinder<UMaterialInterface> MTemp(TEXT("MaterialInterface'/Game/Materials/M_Test.M_Test'"));
-		if (Controller->TargetSegment->Material)
-			Controller->TargetSegment->SetSegmentMaterial(0, Controller->TargetSegment->Material);
-		else if (MTemp.Succeeded() && (UMaterialInstance*)MTemp.Object)
-			Controller->TargetSegment->SetSegmentMaterial(0, (UMaterialInterface*)MTemp.Object);
 
 		// Add hair segment to current layer
 		if (!Controller->TargetLayer)
