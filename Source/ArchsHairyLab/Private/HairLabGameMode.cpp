@@ -32,6 +32,7 @@ AHairLabGameMode::AHairLabGameMode(const FObjectInitializer& ObjectInitializer) 
 
 		// Get player controllers
 		Controller = Cast<AMyPlayerController>(World->GetFirstPlayerController());
+		Controller->TargetLayer = Hair->HairLayers[0];
 	}
 
 

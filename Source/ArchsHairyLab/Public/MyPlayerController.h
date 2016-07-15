@@ -56,6 +56,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Procedural Mesh Methods")
 	FVector MapVertex(FVector V, FVector Direction, FVector Normal, float XWidth, float YWidth, float Weight);
 
+	// Data for usage
 	UPROPERTY(BlueprintReadWrite)
 	FHitResult HitResult = FHitResult();
 
@@ -64,4 +65,7 @@ public:
 
 	UPROPERTY(BlueprintReadWrite)
 	class AHairSegment* TargetSegment;
+
+	UPROPERTY(BlueprintReadWrite)
+	class AHairLayer* TargetLayer;
 };

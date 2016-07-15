@@ -34,20 +34,35 @@ AHairSegment* AHair::SpawnSegment()
 		// Get player controllers
 		AMyPlayerController* Controller = Cast<AMyPlayerController>(World->GetFirstPlayerController());
 
-		if (Controller)
-		{
-			// Set controller cursor hit result
-			Controller->GetHitResultUnderCursorByChannel(UEngineTypes::ConvertToTraceType(ECC_Camera), true, Controller->HitResult);
+		if (!Controller)
+			return NULL;
 
-			// If hit head mesh
-			if (Controller->HitResult.Actor->GetClass()->IsChildOf(AHead::StaticClass()))
-			{
-				// Spawn hair object
-				FActorSpawnParameters SpawnParams;
-				Controller->TargetSegment = World->SpawnActor<AHairSegment>(AHairSegment::StaticClass(), FVector(0.0f, 0.0f, 0.0f), FRotator(0.0f), SpawnParams);
+		// Set controller cursor hit result
+		Controller->GetHitResultUnderCursorByChannel(UEngineTypes::ConvertToTraceType(ECC_Camera), true, Controller->HitResult);
 
-			}
-		}
+		// Only proceed if hit head mesh
+		if (!Controller->HitResult.Actor->IsA(AHead::StaticClass()))
+			return NULL;
+
+		// Spawn segment object
+		FActorSpawnParameters SpawnParams;
+		Controller->TargetSegment = World->SpawnActor<AHairSegment>(AHairSegment::StaticClass(), FVector(0.0f, 0.0f, 0.0f), FRotator(0.0f), SpawnParams);
+		// Setup new segment
+		Controller->TargetSegment->AddSplinePoint(Controller->HitResult.Location);
+		Controller->TargetSegment->Normals.Add(Controller->HitResult.Normal);
+		//UMaterial* MTemp;
+		//static ConstructorHelpers::FObjectFinder<UMaterial> MTemp(TEXT("'Material'/Game/Materials/M_Test.M_Test'"));
+		static ConstructorHelpers::FObjectFinder<UMaterialInterface> MTemp(TEXT("MaterialInterface'/Game/Materials/M_Test.M_Test'"));
+		if (Controller->TargetSegment->Material)
+			Controller->TargetSegment->SetSegmentMaterial(0, Controller->TargetSegment->Material);
+		else if (MTemp.Succeeded() && (UMaterialInstance*)MTemp.Object)
+			Controller->TargetSegment->SetSegmentMaterial(0, (UMaterialInterface*)MTemp.Object);
+
+		// Add hair segment to current layer
+		if (!Controller->TargetLayer)
+			return Controller->TargetSegment;
+
+		Controller->TargetLayer->Segments.Add(Controller->TargetSegment);
 	}
 
 	return NULL;

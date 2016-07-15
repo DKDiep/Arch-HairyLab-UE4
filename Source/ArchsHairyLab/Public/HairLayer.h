@@ -34,4 +34,7 @@ public:
 
 	UPROPERTY(BlueprintReadWrite)
 	float LayerYOffset = 0.0f;
+
+	UPROPERTY(BlueprintReadWrite)
+	TArray<class AHairSegment*> Segments;
 };
