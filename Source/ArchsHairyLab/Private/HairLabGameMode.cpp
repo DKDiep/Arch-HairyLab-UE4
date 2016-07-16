@@ -47,11 +47,4 @@ void AHairLabGameMode::StartPlay()
 			Controller->TargetLayer = Hair->HairLayers[0];
 		}
 	}
-
 }
-
-// Called every frame
-/*void AHairLabGameMode::Tick(float DeltaTime)
-{
-}*/
-
