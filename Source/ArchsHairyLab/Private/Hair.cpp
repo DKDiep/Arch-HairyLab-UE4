@@ -177,7 +177,7 @@ void AHair::UpdateSegment(AHairSegment* InSegment)
 	for (int i = 1; i <= InSegment->Spline->GetNumberOfSplinePoints() - 1; i++)
 	{
 		AssignPositions(InSegment->Spline->GetLocationAtSplinePoint(i - 1, ESplineCoordinateSpace::Local), InSegment->Spline->GetLocationAtSplinePoint(i, ESplineCoordinateSpace::Local));
-		float Distance = InSegment->Spline->GetDistanceAlongSplineAtSplinePoint(i);
+		float Distance = InSegment->Spline->GetDistanceAlongSplineAtSplinePoint(i-1);
 		float TotalDistance = InSegment->Spline->GetDistanceAlongSplineAtSplinePoint(InSegment->Spline->GetNumberOfSplinePoints()-1);
 		Weight = 1.0f - Distance / TotalDistance;
 
