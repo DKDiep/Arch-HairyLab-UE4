@@ -196,11 +196,6 @@ void AHair::UpdateSegment(AHairSegment* InSegment)
 		}
 	}
 
-	for (int i = 0; i < UVs.Num(); i++)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("UVs %d %f %f"), i, UVs[i].X, UVs[i].Y);
-	}
-
 	// Create mesh 
 	InSegment->ProceduralMesh->CreateMeshSection(0, Vertices, Triangles, TArray<FVector>(), UVs, TArray<FColor>(), TArray<FProcMeshTangent>(), false);
 }
@@ -258,10 +253,6 @@ FVector AHair::MapVertex(FVector V, FVector Direction, FVector Normal, float XWi
 	float VDistance = AnchorA.Z - V.Z;
 	float Distance = FVector::Dist(AnchorA, AnchorB);
 	float VRatio = VDistance / Distance;
-	//UE_LOG(LogTemp, Warning, TEXT("vd %f, d %f, vr %f"), VDistance, Distance, VRatio);
-	//UE_LOG(LogTemp, Warning, TEXT("anchora %f %f %f"), AnchorA.X, AnchorA.Y, AnchorA.Z);
-	//UE_LOG(LogTemp, Warning, TEXT("anchorb %f %f %f"), AnchorB.X, AnchorB.Y, AnchorB.Z);
-
 	// Get displacement vector from P1 to P2
 	FVector P3 = P2 - P1;
 	// From P1, add weighted displacement vector for vertical offset
@@ -269,8 +260,6 @@ FVector AHair::MapVertex(FVector V, FVector Direction, FVector Normal, float XWi
 
 	//Get X direction
 	FVector DirX = FVector::CrossProduct(Direction, Normal);
-	UE_LOG(LogTemp, Warning, TEXT("DirX %f %f %f"), DirX.X, DirX.Y, DirX.Z);
-	UE_LOG(LogTemp, Warning, TEXT("V %f %f %f"), V.X, V.Y, V.Z);
 	// Apply X direction
 	V2 = V2 + (DirX*V.X*InWeight);
 
@@ -278,8 +267,6 @@ FVector AHair::MapVertex(FVector V, FVector Direction, FVector Normal, float XWi
 	FVector DirY = DirX.RotateAngleAxis(90, FVector(0, 0, 1));
 	// Apply Y direction
 	V2 = V2 + (DirY*V.Y*InWeight);
-
-	UE_LOG(LogTemp, Warning, TEXT("V2 %f %f %f"), V2.X, V2.Y, V2.Z);
 
 	//return V;
 	return V2;
