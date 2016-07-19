@@ -96,6 +96,8 @@ AHairSegment* AHair::SpawnSegment()
 	// Set controller cursor hit result
 	Controller->GetHitResultUnderCursorByChannel(UEngineTypes::ConvertToTraceType(ECC_Camera), true, Controller->HitResult);
 
+	// Check hit result has actor
+	if (!Controller->HitResult.Actor.IsValid()) return NULL;
 	// Only proceed if hit head mesh
 	if (!Controller->HitResult.Actor->IsA(AHead::StaticClass())) return NULL;
 
