@@ -37,7 +37,7 @@ void AHairLabGameMode::StartPlay()
 		// Spawn hair object
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-		Hair = World->SpawnActor<AHair>(AHair::StaticClass(), FVector(0.0f, 0.0f, 0.0f), FRotator(0.0f), SpawnParams);
+		this->Hair = World->SpawnActor<AHair>(AHair::StaticClass(), FVector(0.0f, 0.0f, 0.0f), FRotator(0.0f), SpawnParams);
 
 		// Get player controllers
 		Controller = Cast<AMyPlayerController>(World->GetFirstPlayerController());
