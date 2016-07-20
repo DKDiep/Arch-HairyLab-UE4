@@ -18,7 +18,7 @@ AHair::AHair()
 
 	// Create default layer
 	AHairLayer* DefaultLayer = NewObject<AHairLayer>();
-	DefaultLayer->Name = FName("Layer 0");
+	DefaultLayer->Name = FString("Layer 0");
 	DefaultLayer->Id = 0;
 	HairLayers.Add(DefaultLayer);
 

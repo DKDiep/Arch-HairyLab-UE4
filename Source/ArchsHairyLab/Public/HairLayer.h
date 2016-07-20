@@ -18,7 +18,7 @@ public:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(BlueprintReadWrite)
-	FName Name;
+	FString Name;
 
 	UPROPERTY(BlueprintReadWrite)
 	int Id;
