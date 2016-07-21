@@ -14,12 +14,18 @@ class ARCHSHAIRYLAB_API AHairLabGameMode : public AGameMode
 	
 	AHairLabGameMode(const FObjectInitializer& ObjectInitializer);
 
-	virtual void StartPlay() override;
+	virtual void BeginPlay() override;
 	
 public:
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class AHair* Hair;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Test")
+	int AAA = 0;
 
 	UPROPERTY(BlueprintReadWrite)
 	class AMyPlayerController* Controller;
+
+	UFUNCTION(BlueprintCallable, Category = "Setup")
+	void Setup();
 };

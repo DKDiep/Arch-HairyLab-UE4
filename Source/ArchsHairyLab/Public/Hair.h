@@ -18,28 +18,34 @@ public:
 	virtual void BeginPlay() override;
 
 public:
+	// Layers
 	UPROPERTY(BlueprintReadWrite)
 	TArray<class AHairLayer*> HairLayers;
-	
+
+	UPROPERTY(BlueprintReadWrite)
+	int LayerId = 0;
+
+	UFUNCTION(BlueprintCallable, Category = "Layers")
+	void AddNewLayer();
+
+	// Hair Attributes
 	UPROPERTY(BlueprintReadWrite)
 	float GlobalXWidth = 100.0f;
 
 	UPROPERTY(BlueprintReadWrite)
 	float GlobalYWidth = 10.0f;
 
+	// Procedural Mesh Generation
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UProceduralMeshData* ProceduralMeshData;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UProceduralMeshData* StartMeshData;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UProceduralMeshData* MiddleMeshData;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UProceduralMeshData* EndMeshData;
 
-	// Data for connecting to components
 	UPROPERTY(BlueprintReadWrite)
 	FVector AnchorA = FVector(0, 0, 0);
 	UPROPERTY(BlueprintReadWrite)
@@ -62,8 +68,6 @@ public:
 
 	UPROPERTY(BlueprintReadWrite)
 	int NumTriangles = 0;
-	//UPROPERTY(BlueprintReadWrite)
-	//int NumNodes = 0;
 	UPROPERTY(BlueprintReadWrite)
 	bool IsUVReversed = true;
 	UPROPERTY(BlueprintReadWrite)
@@ -71,11 +75,11 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	float Weight = 1.0f;
 
-	UFUNCTION(BlueprintCallable, Category = "Prodecural Mesh Methods")
-	void CalculateEndPoints(TArray<FVector> InVertices);
-
 	UFUNCTION(BlueprintCallable, Category = "Procedural Mesh Methods")
 	void SetupMesh();
+
+	UFUNCTION(BlueprintCallable, Category = "Prodecural Mesh Methods")
+	void CalculateEndPoints(TArray<FVector> InVertices);
 
 	UFUNCTION(BlueprintCallable, Category = "Procedural Mesh Methods")
 	void AssignPositions(FVector InP1, FVector InP2);

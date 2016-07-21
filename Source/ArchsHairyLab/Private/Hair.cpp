@@ -17,10 +17,7 @@ AHair::AHair()
 	PrimaryActorTick.bCanEverTick = false;
 
 	// Create default layer
-	AHairLayer* DefaultLayer = NewObject<AHairLayer>();
-	DefaultLayer->Name = FString("Layer 0");
-	DefaultLayer->Id = 0;
-	HairLayers.Add(DefaultLayer);
+	AddNewLayer();
 
 	SetupMesh();
 }
@@ -29,7 +26,15 @@ AHair::AHair()
 void AHair::BeginPlay()
 {
 	Super::BeginPlay();
-	
+}
+
+void AHair::AddNewLayer()
+{
+	AHairLayer* NewLayer = NewObject<AHairLayer>();
+	NewLayer->Name = FString("New Layer");
+	NewLayer->Id = LayerId;
+	LayerId += 1;
+	HairLayers.Add(NewLayer);
 }
 
 void AHair::SetupMesh()
