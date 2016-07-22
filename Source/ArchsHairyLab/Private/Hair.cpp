@@ -9,6 +9,7 @@
 #include "MyPlayerController.h"
 #include "Head.h"
 #include "ProceduralMeshComponent.h"
+#include "ProceduralMeshData.h"
 #include "Runtime/Engine/Classes/Components/SplineComponent.h"
 
 AHair::AHair()
