@@ -20,9 +20,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class AHair* Hair;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Test")
-	int AAA = 0;
-
 	UPROPERTY(BlueprintReadWrite)
 	class AMyPlayerController* Controller;
 

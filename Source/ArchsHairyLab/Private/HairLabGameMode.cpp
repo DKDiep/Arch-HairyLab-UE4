@@ -23,7 +23,6 @@ AHairLabGameMode::AHairLabGameMode(const FObjectInitializer& ObjectInitializer) 
 	/*PlayerStateClass = ;
 	GameStateClass = ;
 	SpectatorClass = ;*/
-	AAA = 1132;
 }
 
 // Called when the game starts or when spawned
@@ -44,8 +43,6 @@ void AHairLabGameMode::Setup()
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 		Cast<AHairLabGameMode>(World->GetAuthGameMode())->Hair = World->SpawnActor<AHair>(AHair::StaticClass(), FVector(0.0f, 0.0f, 0.0f), FRotator(0.0f), SpawnParams);
-		AAA = 10;
-		UE_LOG(LogTemp, Warning, TEXT("GameMode_Setup %d"), AAA);
 		// Get player controllers
 		Controller = Cast<AMyPlayerController>(World->GetFirstPlayerController());
 		if (Hair && Controller && Hair->HairLayers.Num() > 0 && Hair->HairLayers[0])

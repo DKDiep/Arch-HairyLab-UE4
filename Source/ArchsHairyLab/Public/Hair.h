@@ -30,7 +30,7 @@ public:
 
 	// Hair Attributes
 	UPROPERTY(BlueprintReadWrite)
-	float GlobalXWidth = 100.0f;
+	float GlobalXWidth = 50.0f;
 
 	UPROPERTY(BlueprintReadWrite)
 	float GlobalYWidth = 10.0f;
@@ -47,9 +47,17 @@ public:
 	class UProceduralMeshData* EndMeshData;
 
 	UPROPERTY(BlueprintReadWrite)
-	FVector AnchorA = FVector(0, 0, 0);
+	FVector AnchorLengthStart = FVector(0, 0, 0);
 	UPROPERTY(BlueprintReadWrite)
-	FVector AnchorB = FVector(0, 0, 0);
+	FVector AnchorLengthEnd = FVector(0, 0, 0);
+	UPROPERTY(BlueprintReadWrite)
+	FVector AnchorWidthStart = FVector(0, 0, 0);
+	UPROPERTY(BlueprintReadWrite)
+	FVector AnchorWidthEnd = FVector(0, 0, 0);
+	UPROPERTY(BlueprintReadWrite)
+	FVector AnchorThicknessStart = FVector(0, 0, 0);
+	UPROPERTY(BlueprintReadWrite)
+	FVector AnchorThicknessEnd = FVector(0, 0, 0);
 	UPROPERTY(BlueprintReadWrite)
 	TArray<FVector> EndPointsA;
 	UPROPERTY(BlueprintReadWrite)

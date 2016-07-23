@@ -210,30 +210,57 @@ void AHair::UpdateSegment(AHairSegment* InSegment)
 
 void AHair::CalculateEndPoints(TArray<FVector> InVertices)
 {
-	float min = FLT_MAX;
-	float max = FLT_MIN;
+	float minLength = FLT_MAX;
+	float maxLength = FLT_MIN;
+	float minWidth = FLT_MAX;
+	float maxWidth = FLT_MIN;
+	float minThickness = FLT_MAX;
+	float maxThickness = FLT_MIN;
 	// First calculate ends
 	for (int i = 0; i < InVertices.Num(); i++)
 	{
-		if (InVertices[i].Z > max)
+		// Length
+		if (InVertices[i].Z > maxLength)
 		{
-			max = InVertices[i].Z;
-			AnchorA = FVector(0.0f, 0.0f, InVertices[i].Z);
+			maxLength = InVertices[i].Z;
+			AnchorLengthStart = FVector(0.0f, 0.0f, InVertices[i].Z);
 		}
-		if (InVertices[i].Z < min)
+		if (InVertices[i].Z < minLength)
 		{
-			min = InVertices[i].Z;
-			AnchorB = FVector(0.0f, 0.0f, InVertices[i].Z);
+			minLength = InVertices[i].Z;
+			AnchorLengthEnd = FVector(0.0f, 0.0f, InVertices[i].Z);
+		}
+		// Width
+		if (InVertices[i].X > maxWidth)
+		{
+			maxWidth = InVertices[i].X;
+			AnchorWidthStart = FVector(InVertices[i].X, 0.0f, 0.0f);
+		}
+		if (InVertices[i].X < minWidth)
+		{
+			minWidth = InVertices[i].X;
+			AnchorWidthEnd = FVector(InVertices[i].X, 0.0f, 0.0f);
+		}
+		// Thickness
+		if (InVertices[i].Y > maxThickness)
+		{
+			maxThickness = InVertices[i].Y;
+			AnchorThicknessStart = FVector(0.0f, InVertices[i].Y, 0.0f);
+		}
+		if (InVertices[i].Y < minThickness)
+		{
+			minThickness = InVertices[i].Y;
+			AnchorThicknessEnd = FVector(0.0f, InVertices[i].Y, 0.0f);
 		}
 	}
 	// Get all points that lie on ends
 	for (int i = 0; i < InVertices.Num(); i++)
 	{
-		if (InVertices[i].Z == max)
+		if (InVertices[i].Z == maxLength)
 		{
 			EndPointsA.Add(InVertices[i]);
 		}
-		if (InVertices[i].Z == min)
+		if (InVertices[i].Z == minLength)
 		{
 			EndPointsB.Add(InVertices[i]);
 		}
@@ -258,19 +285,33 @@ void AHair::AssignPositions(FVector InP1, FVector InP2)
 FVector AHair::MapVertex(FVector V, FVector Direction, FVector Normal, float XWidth, float YWidth, float InWeight)
 {
 	// Find percentage distance between A to B
-	float VDistance = AnchorA.Z - V.Z;
-	float Distance = FVector::Dist(AnchorA, AnchorB);
+	float VDistance = AnchorLengthStart.Z - V.Z;
+	float Distance = FVector::Dist(AnchorLengthStart, AnchorLengthEnd);
 	float VRatio = VDistance / Distance;
 	// Get displacement vector from P1 to P2
 	FVector P3 = P2 - P1;
 	// From P1, add weighted displacement vector for vertical offset
 	FVector V2 = P1 + VRatio*P3;
 
-	//Get X direction
+	// Get X direction
 	FVector DirX = FVector::CrossProduct(Direction, Normal);
+	// Get X ratio
+	float XDistance = AnchorWidthStart.X - V.X;
+	float XDisplacement = FVector::Dist(AnchorWidthStart, AnchorWidthEnd);
+	UE_LOG(LogTemp, Warning, TEXT("GameMode_Setup %f"), XDisplacement);
+	float XRatio = 0.0f;
+	if (XDisplacement == 0.0f)
+		XRatio = 0.0f;
+	else
+		XRatio = -0.5f + XDistance / XDisplacement;
 	// Apply X direction
-	V2 = V2 + (DirX*V.X*InWeight);
+	V2 = V2 + (DirX*GlobalXWidth*XRatio*InWeight);
+	//V2 = V2 + (DirX*V.X*InWeight);
 
+	// Find percentage distance of Y
+	float YDistance = AnchorThicknessStart.Y - V.Y;
+	float YDisplacement = FVector::Dist(AnchorThicknessStart, AnchorThicknessEnd);
+	float YRatio = YDistance / YDisplacement;
 	// Get Y direction
 	FVector DirY = DirX.RotateAngleAxis(90, FVector(0, 0, 1));
 	// Apply Y direction
