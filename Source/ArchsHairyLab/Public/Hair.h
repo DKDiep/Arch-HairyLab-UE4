@@ -102,6 +102,11 @@ public:
 	AHairNode* SpawnNode(AMyPlayerController* Controller, UWorld* World, FVector Location);
 
 	UFUNCTION(BlueprintCallable, Category = "Procedural Mesh Generation")
+	void UpdateHair();
+	UFUNCTION(BlueprintCallable, Category = "Procedural Mesh Generation")
+	void UpdateLayer(class AHairLayer* InLayer);
+
+	UFUNCTION(BlueprintCallable, Category = "Procedural Mesh Generation")
 	void UpdateSegment(class AHairSegment* InSegment);
 
 	UFUNCTION(BlueprintCallable, Category = "Procedural Mesh Generation")
@@ -118,4 +123,8 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Procedural Mesh Methods")
 	void AddUVs(bool IsFirst);
+
+	// File management
+	UFUNCTION(BlueprintCallable, Category = "File Management")
+	void ExportHair();
 };

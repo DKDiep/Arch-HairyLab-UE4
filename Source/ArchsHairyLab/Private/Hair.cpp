@@ -11,6 +11,8 @@
 #include "ProceduralMeshComponent.h"
 #include "ProceduralMeshData.h"
 #include "Runtime/Engine/Classes/Components/SplineComponent.h"
+#include "Runtime/Core/Public/Misc/CoreMisc.h"
+#include "Runtime/Core/Public/HAL/PlatformFilemanager.h"
 
 AHair::AHair()
 {
@@ -174,6 +176,24 @@ AHairNode* AHair::SpawnNode(AMyPlayerController* Controller, UWorld* World, FVec
 	return Controller->TargetNode;
 }
 
+void AHair::UpdateHair()
+{
+	for (int i = 0; i < HairLayers.Num(); i++)
+	{
+		UpdateLayer(HairLayers[i]);
+	}
+}
+
+void AHair::UpdateLayer(AHairLayer* InLayer)
+{
+	if (!InLayer) return;
+
+	for (int i = 0; i < InLayer->Segments.Num(); i++)
+	{
+		UpdateSegment(InLayer->Segments[i]);
+	}
+}
+
 void AHair::UpdateSegment(AHairSegment* InSegment)
 {
 	if (!InSegment) return;
@@ -298,7 +318,6 @@ FVector AHair::MapVertex(FVector V, FVector Direction, FVector Normal, float XWi
 	// Get X ratio
 	float XDistance = AnchorWidthStart.X - V.X;
 	float XDisplacement = FVector::Dist(AnchorWidthStart, AnchorWidthEnd);
-	UE_LOG(LogTemp, Warning, TEXT("GameMode_Setup %f"), XDisplacement);
 	float XRatio = 0.0f;
 	if (XDisplacement == 0.0f)
 		XRatio = 0.0f;
@@ -358,5 +377,38 @@ void AHair::AddUVs(bool IsFirst)
 			UVs.Add(MiddleMeshData->UVs[N-1]);
 		}
 		IsUVReversed = !IsUVReversed;
+	}
+}
+
+//////////////////// FILE MANAGEMENT ////////////////////
+
+void AHair::ExportHair()
+{
+	FString SaveDirectory = FPaths::GameDir();
+	FString FileName = FString("Hair.obj");
+	FString SaveText = FString("Lorem ipsum");
+	bool IsOverwriting = true;
+
+	// Parse data to obj format
+	//InSegment->ProceduralMesh->CreateMeshSection(0, Vertices, Triangles, TArray<FVector>(), UVs, TArray<FColor>(), TArray<FProcMeshTangent>(), false);
+
+
+
+	IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
+
+	// CreateDirectoryTree returns true if the destination
+	// directory existed prior to call or has been created
+	// during the call.
+	if (PlatformFile.CreateDirectoryTree(*SaveDirectory))
+	{
+		// Get absolute file path
+		FString AbsoluteFilePath = SaveDirectory + "/" + FileName;
+
+		// Allow overwriting or file doesn't already exist
+		if (IsOverwriting || !PlatformFile.FileExists(*AbsoluteFilePath))
+		{
+			FFileHelper::SaveStringToFile(SaveText, *AbsoluteFilePath);
+			UE_LOG(LogTemp, Warning, TEXT("Exported hair to %s"), *AbsoluteFilePath);
+		}
 	}
 }
