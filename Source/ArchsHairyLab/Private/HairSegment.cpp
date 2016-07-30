@@ -4,6 +4,7 @@
 #include "HairSegment.h"
 
 #include "ProceduralMeshComponent.h"
+#include "ProceduralMeshData.h"
 #include "Runtime/Engine/Classes/Components/SplineComponent.h"
 
 // Sets default values
@@ -11,6 +12,7 @@ AHairSegment::AHairSegment()
 {
 	PrimaryActorTick.bCanEverTick = false;
 
+	ProceduralMeshData = NewObject<UProceduralMeshData>();
 	ProceduralMesh = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("GeneratedMesh"));
 	RootComponent = ProceduralMesh;
 

@@ -37,9 +37,6 @@ public:
 
 	// Procedural Mesh Generation
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	class UProceduralMeshData* ProceduralMeshData;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UProceduralMeshData* StartMeshData;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UProceduralMeshData* MiddleMeshData;
@@ -67,17 +64,18 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	FVector P2 = FVector(0, 0, 0);
 
+	/*
 	UPROPERTY(BlueprintReadWrite)
 	TArray<FVector> Vertices;
 	UPROPERTY(BlueprintReadWrite)
 	TArray<int> Triangles;
 	UPROPERTY(BlueprintReadWrite)
 	TArray<FVector2D> UVs;
-
 	UPROPERTY(BlueprintReadWrite)
 	int NumTriangles = 0;
 	UPROPERTY(BlueprintReadWrite)
 	bool IsUVReversed = true;
+	*/
 	UPROPERTY(BlueprintReadWrite)
 	bool IsExtending = false;
 	UPROPERTY(BlueprintReadWrite)

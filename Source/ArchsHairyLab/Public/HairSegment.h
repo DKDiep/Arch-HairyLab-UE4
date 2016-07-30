@@ -11,8 +11,17 @@ class ARCHSHAIRYLAB_API AHairSegment : public AActor
 	GENERATED_BODY()
 	
 public:	
+	// Procedural Mesh Generation
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Mesh Components")
 	class UProceduralMeshComponent* ProceduralMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UProceduralMeshData* ProceduralMeshData;
+
+	UPROPERTY(BlueprintReadWrite)
+	int NumTriangles = 0;
+	UPROPERTY(BlueprintReadWrite)
+	bool IsUVReversed = true;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Spline Components")
 	class USplineComponent* Spline;

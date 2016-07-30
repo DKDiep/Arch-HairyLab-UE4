@@ -42,7 +42,6 @@ void AHair::AddNewLayer()
 
 void AHair::SetupMesh()
 {
-	ProceduralMeshData = NewObject<UProceduralMeshData>();
 	StartMeshData = NewObject<UProceduralMeshData>();
 	MiddleMeshData = NewObject<UProceduralMeshData>();
 	EndMeshData = NewObject<UProceduralMeshData>();
@@ -225,7 +224,19 @@ void AHair::UpdateSegment(AHairSegment* InSegment)
 	}
 
 	// Create mesh 
-	InSegment->ProceduralMesh->CreateMeshSection(0, Vertices, Triangles, TArray<FVector>(), UVs, TArray<FColor>(), TArray<FProcMeshTangent>(), false);
+	UWorld* const World = GetWorld();
+	if (!World) return;
+
+	// Get player controllers
+	AMyPlayerController* Controller = Cast<AMyPlayerController>(World->GetFirstPlayerController());
+
+	if (!Controller || !Controller->TargetSegment) return;
+	//InSegment->ProceduralMesh->CreateMeshSection(0, Vertices, Triangles, TArray<FVector>(), UVs, TArray<FColor>(), TArray<FProcMeshTangent>(), false);
+	InSegment->ProceduralMesh->CreateMeshSection(0, Controller->TargetSegment->ProceduralMeshData->Vertices,
+													Controller->TargetSegment->ProceduralMeshData->Triangles,
+													TArray<FVector>(), 
+													Controller->TargetSegment->ProceduralMeshData->UVs,
+													TArray<FColor>(), TArray<FProcMeshTangent>(), false);
 }
 
 void AHair::CalculateEndPoints(TArray<FVector> InVertices)
@@ -289,11 +300,19 @@ void AHair::CalculateEndPoints(TArray<FVector> InVertices)
 
 void AHair::ClearMeshData()
 {
-	Vertices.Empty();
-	Triangles.Empty();
-	UVs.Empty();
-	NumTriangles = 0;
-	IsUVReversed = true;
+	UWorld* const World = GetWorld();
+	if (!World) return;
+
+	// Get player controllers
+	AMyPlayerController* Controller = Cast<AMyPlayerController>(World->GetFirstPlayerController());
+
+	if (!Controller || !Controller->TargetSegment) return;
+
+	Controller->TargetSegment->ProceduralMeshData->Vertices.Empty();
+	Controller->TargetSegment->ProceduralMeshData->Triangles.Empty();
+	Controller->TargetSegment->ProceduralMeshData->UVs.Empty();
+	Controller->TargetSegment->NumTriangles = 0;
+	Controller->TargetSegment->IsUVReversed = true;
 }
 
 void AHair::AssignPositions(FVector InP1, FVector InP2)
@@ -342,41 +361,61 @@ FVector AHair::MapVertex(FVector V, FVector Direction, FVector Normal, float XWi
 
 void AHair::AddVertices(int FirstIndex, TArray<FVector> InVertices, FVector Direction, FVector Normal)
 {
+	UWorld* const World = GetWorld();
+	if (!World) return;
+
+	// Get player controllers
+	AMyPlayerController* Controller = Cast<AMyPlayerController>(World->GetFirstPlayerController());
+
 	for (int i = FirstIndex; i <= MiddleMeshData->Vertices.Num() - 1; i++)
 	{
-		Vertices.Add(MapVertex(InVertices[i], Direction, Normal, 0.0f, 0.0f, Weight));
+		Controller->TargetSegment->ProceduralMeshData->Vertices.Add(MapVertex(InVertices[i], Direction, Normal, 0.0f, 0.0f, Weight));
 	}
 }
 
 void AHair::AddTriangles()
 {
+	UWorld* const World = GetWorld();
+	if (!World) return;
+
+	// Get player controllers
+	AMyPlayerController* Controller = Cast<AMyPlayerController>(World->GetFirstPlayerController());
+
+	if (!Controller || !Controller->TargetSegment) return;
+
 	for (int i = 0; i <= MiddleMeshData->Triangles.Num() - 1; i++)
 	{
-		Triangles.Add(NumTriangles + MiddleMeshData->Triangles[i]);
+		Controller->TargetSegment->ProceduralMeshData->Triangles.Add(Controller->TargetSegment->NumTriangles + MiddleMeshData->Triangles[i]);
 	}
-	NumTriangles = NumTriangles + MiddleMeshData->Vertices.Num() - 2;
+	Controller->TargetSegment->NumTriangles = Controller->TargetSegment->NumTriangles + MiddleMeshData->Vertices.Num() - 2;
 }
 
 void AHair::AddUVs(bool IsFirst)
 {
+	UWorld* const World = GetWorld();
+	if (!World) return;
+
+	// Get player controllers
+	AMyPlayerController* Controller = Cast<AMyPlayerController>(World->GetFirstPlayerController());
+
 	if (IsFirst)
 	{
-		UVs.Append(MiddleMeshData->UVs);
+		Controller->TargetSegment->ProceduralMeshData->UVs.Append(MiddleMeshData->UVs);
 	}
 	else
 	{
-		if (IsUVReversed)
+		if (Controller->TargetSegment->IsUVReversed)
 		{
-			UVs.Add(MiddleMeshData->UVs[0]);
-			UVs.Add(MiddleMeshData->UVs[1]);
+			Controller->TargetSegment->ProceduralMeshData->UVs.Add(MiddleMeshData->UVs[0]);
+			Controller->TargetSegment->ProceduralMeshData->UVs.Add(MiddleMeshData->UVs[1]);
 		}
 		else
 		{
 			int N = MiddleMeshData->UVs.Num();
-			UVs.Add(MiddleMeshData->UVs[N-2]);
-			UVs.Add(MiddleMeshData->UVs[N-1]);
+			Controller->TargetSegment->ProceduralMeshData->UVs.Add(MiddleMeshData->UVs[N-2]);
+			Controller->TargetSegment->ProceduralMeshData->UVs.Add(MiddleMeshData->UVs[N-1]);
 		}
-		IsUVReversed = !IsUVReversed;
+		Controller->TargetSegment->IsUVReversed = !Controller->TargetSegment->IsUVReversed;
 	}
 }
 
@@ -386,13 +425,12 @@ void AHair::ExportHair()
 {
 	FString SaveDirectory = FPaths::GameDir();
 	FString FileName = FString("Hair.obj");
-	FString SaveText = FString("Lorem ipsum");
+	FString SaveText = FString("");
 	bool IsOverwriting = true;
 
 	// Parse data to obj format
 	//InSegment->ProceduralMesh->CreateMeshSection(0, Vertices, Triangles, TArray<FVector>(), UVs, TArray<FColor>(), TArray<FProcMeshTangent>(), false);
-
-
+	
 
 	IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
 
