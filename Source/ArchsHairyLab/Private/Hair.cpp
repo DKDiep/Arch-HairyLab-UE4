@@ -69,9 +69,9 @@ void AHair::SetupMesh()
 	MiddleMeshData->Triangles.Add(0);
 	MiddleMeshData->Triangles.Add(1);
 	MiddleMeshData->Triangles.Add(2);
-	MiddleMeshData->Triangles.Add(1);
-	MiddleMeshData->Triangles.Add(2);
 	MiddleMeshData->Triangles.Add(3);
+	MiddleMeshData->Triangles.Add(2);
+	MiddleMeshData->Triangles.Add(1);
 	MiddleMeshData->UVs.Add(FVector2D(0.0f, 1.0f));
 	MiddleMeshData->UVs.Add(FVector2D(1.0f, 1.0f));
 	MiddleMeshData->UVs.Add(FVector2D(0.0f, 0.0f));
