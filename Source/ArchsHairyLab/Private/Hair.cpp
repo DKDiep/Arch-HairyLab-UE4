@@ -429,8 +429,37 @@ void AHair::ExportHair()
 	bool IsOverwriting = true;
 
 	// Parse data to obj format
-	//InSegment->ProceduralMesh->CreateMeshSection(0, Vertices, Triangles, TArray<FVector>(), UVs, TArray<FColor>(), TArray<FProcMeshTangent>(), false);
-	
+	int NumVertices = 1; // obj counts from 1
+	for (int i = 0; i < HairLayers.Num(); i++)
+	{
+		for (int j = 0; j < HairLayers[i]->Segments.Num(); j++)
+		{
+			UProceduralMeshData* MeshData = HairLayers[i]->Segments[j]->ProceduralMeshData;
+			for (int k = 0; k < MeshData->Vertices.Num(); k++)
+			{
+				// Get segment location add local vertex
+				FVector Loc = HairLayers[i]->Segments[j]->GetActorLocation();
+				Loc += MeshData->Vertices[k];
+				SaveText = SaveText + "v " + FString::SanitizeFloat(Loc.X) + " " + FString::SanitizeFloat(Loc.Y) + " " + FString::SanitizeFloat(Loc.Z)+ "\n";
+			}
+
+			for (int k = 0; k+3 < MeshData->Triangles.Num(); k+=3)
+			{
+				// Triangles form faces
+				SaveText = SaveText + "f " + FString::FromInt(NumVertices + MeshData->Triangles[k]) + " "
+										+ FString::FromInt(NumVertices + MeshData->Triangles[k+1]) + " "
+										+ FString::FromInt(NumVertices + MeshData->Triangles[k+2]) + "\n";
+			}
+
+			for (int k = 0; k < MeshData->UVs.Num(); k++)
+			{
+				//SaveText += "U\n";
+			}
+
+			// Add numbers at end for faces
+			NumVertices += MeshData->Vertices.Num();
+		}
+	}
 
 	IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
 
