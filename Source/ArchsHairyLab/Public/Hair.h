@@ -18,7 +18,7 @@ public:
 	virtual void BeginPlay() override;
 
 public:
-	// Layers
+	//////////////////// LAYER ////////////////////
 	UPROPERTY(BlueprintReadWrite)
 	TArray<class AHairLayer*> HairLayers;
 
@@ -28,14 +28,18 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Layers")
 	void AddNewLayer();
 
-	// Hair Attributes
+
+	//////////////////// HAIR ATTRIBUTES ////////////////////
+
 	UPROPERTY(BlueprintReadWrite)
 	float GlobalXWidth = 50.0f;
 
 	UPROPERTY(BlueprintReadWrite)
 	float GlobalYWidth = 10.0f;
 
-	// Procedural Mesh Generation
+
+	//////////////////// PROCEDURAL MESH GENERATION ////////////////////
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UProceduralMeshData* StartMeshData;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -64,18 +68,6 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	FVector P2 = FVector(0, 0, 0);
 
-	/*
-	UPROPERTY(BlueprintReadWrite)
-	TArray<FVector> Vertices;
-	UPROPERTY(BlueprintReadWrite)
-	TArray<int> Triangles;
-	UPROPERTY(BlueprintReadWrite)
-	TArray<FVector2D> UVs;
-	UPROPERTY(BlueprintReadWrite)
-	int NumTriangles = 0;
-	UPROPERTY(BlueprintReadWrite)
-	bool IsUVReversed = true;
-	*/
 	UPROPERTY(BlueprintReadWrite)
 	bool IsExtending = false;
 	UPROPERTY(BlueprintReadWrite)
@@ -122,7 +114,20 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Procedural Mesh Methods")
 	void AddUVs(bool IsFirst);
 
-	// File management
+
+	//////////////////// SELECTION ////////////////////
+
+	UFUNCTION(BlueprintCallable, Category = "Selection")
+	void SelectSegment(AHairSegment* Segment);
+
+
+	//////////////////// FILE MANAGEMENT ////////////////////
+
 	UFUNCTION(BlueprintCallable, Category = "File Management")
 	void ExportHair();
+
+	
+	//////////////////// MISC ////////////////////
+
+	AMyPlayerController* GetController();
 };

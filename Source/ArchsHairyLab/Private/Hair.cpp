@@ -25,7 +25,6 @@ AHair::AHair()
 	SetupMesh();
 }
 
-// Called when the game starts or when spawned
 void AHair::BeginPlay()
 {
 	Super::BeginPlay();
@@ -90,7 +89,7 @@ void AHair::SetupMesh()
 	CalculateEndPoints(MiddleMeshData->Vertices);
 }
 
-AHairSegment* AHair::SpawnSegment()
+AMyPlayerController* AHair::GetController()
 {
 	UWorld* const World = GetWorld();
 	if (!World) return NULL;
@@ -98,6 +97,19 @@ AHairSegment* AHair::SpawnSegment()
 	// Get player controllers
 	AMyPlayerController* Controller = Cast<AMyPlayerController>(World->GetFirstPlayerController());
 
+	if (!Controller) return NULL;
+
+	return Controller;
+}
+
+//////////////////// PROCEDURAL MESH GENERATION ////////////////////
+
+AHairSegment* AHair::SpawnSegment()
+{
+	// Get world and player controllers
+	UWorld* const World = GetWorld();
+	if (!World) return NULL;
+	AMyPlayerController* Controller = GetController();
 	if (!Controller) return NULL;
 
 	// Set controller cursor hit result
@@ -135,10 +147,7 @@ void AHair::ExtendSegment()
 {
 	UWorld* const World = GetWorld();
 	if (!World) return;
-
-	// Get player controllers
-	AMyPlayerController* Controller = Cast<AMyPlayerController>(World->GetFirstPlayerController());
-
+	AMyPlayerController* Controller = GetController();
 	if (!Controller || !Controller->TargetSegments[0]) return;
 
 	// Set controller cursor hit result
@@ -225,12 +234,7 @@ void AHair::UpdateSegment(AHairSegment* InSegment)
 	}
 
 	// Create mesh 
-	UWorld* const World = GetWorld();
-	if (!World) return;
-
-	// Get player controllers
-	AMyPlayerController* Controller = Cast<AMyPlayerController>(World->GetFirstPlayerController());
-
+	AMyPlayerController* Controller = GetController();
 	if (!Controller || !Controller->TargetSegments[0]) return;
 	//InSegment->ProceduralMesh->CreateMeshSection(0, Vertices, Triangles, TArray<FVector>(), UVs, TArray<FColor>(), TArray<FProcMeshTangent>(), false);
 	InSegment->ProceduralMesh->CreateMeshSection(0, Controller->TargetSegments[0]->ProceduralMeshData->Vertices,
@@ -301,12 +305,7 @@ void AHair::CalculateEndPoints(TArray<FVector> InVertices)
 
 void AHair::ClearMeshData()
 {
-	UWorld* const World = GetWorld();
-	if (!World) return;
-
-	// Get player controllers
-	AMyPlayerController* Controller = Cast<AMyPlayerController>(World->GetFirstPlayerController());
-
+	AMyPlayerController* Controller = GetController();
 	if (!Controller || !Controller->TargetSegments[0]) return;
 
 	Controller->TargetSegments[0]->ProceduralMeshData->Vertices.Empty();
@@ -366,8 +365,8 @@ void AHair::AddVertices(int FirstIndex, TArray<FVector> InVertices, FVector Dire
 	if (!World) return;
 
 	// Get player controllers
-	AMyPlayerController* Controller = Cast<AMyPlayerController>(World->GetFirstPlayerController());
-
+	AMyPlayerController* Controller = GetController();
+	if (!Controller || !Controller->TargetSegments[0]) return;
 	for (int i = FirstIndex; i <= MiddleMeshData->Vertices.Num() - 1; i++)
 	{
 		Controller->TargetSegments[0]->ProceduralMeshData->Vertices.Add(MapVertex(InVertices[i], Direction, Normal, 0.0f, 0.0f, Weight));
@@ -378,10 +377,7 @@ void AHair::AddTriangles()
 {
 	UWorld* const World = GetWorld();
 	if (!World) return;
-
-	// Get player controllers
-	AMyPlayerController* Controller = Cast<AMyPlayerController>(World->GetFirstPlayerController());
-
+	AMyPlayerController* Controller = GetController();
 	if (!Controller || !Controller->TargetSegments[0]) return;
 
 	for (int i = 0; i <= MiddleMeshData->Triangles.Num() - 1; i++)
@@ -395,10 +391,8 @@ void AHair::AddUVs(bool IsFirst)
 {
 	UWorld* const World = GetWorld();
 	if (!World) return;
-
-	// Get player controllers
-	AMyPlayerController* Controller = Cast<AMyPlayerController>(World->GetFirstPlayerController());
-
+	AMyPlayerController* Controller = GetController();
+	if (!Controller || !Controller->TargetSegments[0]) return;
 	if (IsFirst)
 	{
 		Controller->TargetSegments[0]->ProceduralMeshData->UVs.Append(MiddleMeshData->UVs);
@@ -419,6 +413,13 @@ void AHair::AddUVs(bool IsFirst)
 		Controller->TargetSegments[0]->IsUVReversed = !Controller->TargetSegments[0]->IsUVReversed;
 	}
 }
+
+//////////////////// SELECTION ////////////////////
+void AHair::SelectSegment(AHairSegment* Segment)
+{
+	
+}
+
 
 //////////////////// FILE MANAGEMENT ////////////////////
 
