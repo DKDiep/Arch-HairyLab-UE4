@@ -26,7 +26,7 @@ public:
 	class AHairNode* TargetNode;
 
 	UPROPERTY(BlueprintReadWrite)
-	class AHairSegment* TargetSegment;
+	TArray<class AHairSegment*> TargetSegments;
 
 	UPROPERTY(BlueprintReadWrite)
 	class AHairLayer* TargetLayer;

@@ -110,23 +110,24 @@ AHairSegment* AHair::SpawnSegment()
 
 	// Spawn segment object
 	FActorSpawnParameters SpawnParams;
-	Controller->TargetSegment = World->SpawnActor<AHairSegment>(AHairSegment::StaticClass(), FVector(0.0f, 0.0f, 0.0f), FRotator(0.0f), SpawnParams);
+	Controller->TargetSegments.Empty();
+	Controller->TargetSegments.Add(World->SpawnActor<AHairSegment>(AHairSegment::StaticClass(), FVector(0.0f, 0.0f, 0.0f), FRotator(0.0f), SpawnParams));
 	// Setup new segment
-	Controller->TargetSegment->AddSplinePoint(Controller->HitResult.Location);
-	Controller->TargetSegment->Normals.Add(Controller->HitResult.Normal);
+	Controller->TargetSegments[0]->AddSplinePoint(Controller->HitResult.Location);
+	Controller->TargetSegments[0]->Normals.Add(Controller->HitResult.Normal);
 
 	// Set IsExtending
 	IsExtending = true;
 
 	SpawnNode(Controller, World, Controller->HitResult.Location);
-	UpdateSegment(Controller->TargetSegment);
+	UpdateSegment(Controller->TargetSegments[0]);
 
 	// Add hair segment to current layer
-	if (!Controller->TargetLayer) return Controller->TargetSegment;
+	if (!Controller->TargetLayer) return Controller->TargetSegments[0];
 
-	Controller->TargetLayer->Segments.Add(Controller->TargetSegment);
+	Controller->TargetLayer->Segments.Add(Controller->TargetSegments[0]);
 
-	return Controller->TargetSegment;
+	return Controller->TargetSegments[0];
 }
 
 
@@ -138,16 +139,16 @@ void AHair::ExtendSegment()
 	// Get player controllers
 	AMyPlayerController* Controller = Cast<AMyPlayerController>(World->GetFirstPlayerController());
 
-	if (!Controller || !Controller->TargetSegment) return;
+	if (!Controller || !Controller->TargetSegments[0]) return;
 
 	// Set controller cursor hit result
 	Controller->GetHitResultUnderCursorByChannel(UEngineTypes::ConvertToTraceType(ECC_Camera), true, Controller->HitResult);
 
-	Controller->TargetSegment->AddSplinePoint(Controller->HitResult.Location + Controller->HitResult.Normal*25.0f);
-	Controller->TargetSegment->Normals.Add(Controller->HitResult.Normal);
+	Controller->TargetSegments[0]->AddSplinePoint(Controller->HitResult.Location + Controller->HitResult.Normal*25.0f);
+	Controller->TargetSegments[0]->Normals.Add(Controller->HitResult.Normal);
 
 	SpawnNode(Controller, World, Controller->HitResult.Location + Controller->HitResult.Normal*25.0f);
-	UpdateSegment(Controller->TargetSegment);
+	UpdateSegment(Controller->TargetSegments[0]);
 }
 
 AHairNode* AHair::SpawnNode(AMyPlayerController* Controller, UWorld* World, FVector Location)
@@ -163,13 +164,13 @@ AHairNode* AHair::SpawnNode(AMyPlayerController* Controller, UWorld* World, FVec
 		Controller->TargetNode->SetActorScale3D(FVector(0.03f, 0.03f, 0.03f));
 		FRotator Rot = (Controller->HitResult.Location - (Controller->HitResult.Location+Controller->HitResult.Normal)).Rotation();
 		Controller->TargetNode->SetActorRotation(Rot);
-		if (Controller->TargetSegment)
+		if (Controller->TargetSegments[0])
 		{
 			// Add node to list for segment
-			Controller->TargetSegment->Nodes.Add(Controller->TargetNode);
+			Controller->TargetSegments[0]->Nodes.Add(Controller->TargetNode);
 			// Assign segment reference and index for node
-			Controller->TargetNode->Segment = Controller->TargetSegment;
-			Controller->TargetNode->Index = Controller->TargetSegment->Nodes.Num()-1;
+			Controller->TargetNode->Segment = Controller->TargetSegments[0];
+			Controller->TargetNode->Index = Controller->TargetSegments[0]->Nodes.Num()-1;
 		}
 	}
 	return Controller->TargetNode;
@@ -230,12 +231,12 @@ void AHair::UpdateSegment(AHairSegment* InSegment)
 	// Get player controllers
 	AMyPlayerController* Controller = Cast<AMyPlayerController>(World->GetFirstPlayerController());
 
-	if (!Controller || !Controller->TargetSegment) return;
+	if (!Controller || !Controller->TargetSegments[0]) return;
 	//InSegment->ProceduralMesh->CreateMeshSection(0, Vertices, Triangles, TArray<FVector>(), UVs, TArray<FColor>(), TArray<FProcMeshTangent>(), false);
-	InSegment->ProceduralMesh->CreateMeshSection(0, Controller->TargetSegment->ProceduralMeshData->Vertices,
-													Controller->TargetSegment->ProceduralMeshData->Triangles,
+	InSegment->ProceduralMesh->CreateMeshSection(0, Controller->TargetSegments[0]->ProceduralMeshData->Vertices,
+													Controller->TargetSegments[0]->ProceduralMeshData->Triangles,
 													TArray<FVector>(), 
-													Controller->TargetSegment->ProceduralMeshData->UVs,
+													Controller->TargetSegments[0]->ProceduralMeshData->UVs,
 													TArray<FColor>(), TArray<FProcMeshTangent>(), false);
 }
 
@@ -306,13 +307,13 @@ void AHair::ClearMeshData()
 	// Get player controllers
 	AMyPlayerController* Controller = Cast<AMyPlayerController>(World->GetFirstPlayerController());
 
-	if (!Controller || !Controller->TargetSegment) return;
+	if (!Controller || !Controller->TargetSegments[0]) return;
 
-	Controller->TargetSegment->ProceduralMeshData->Vertices.Empty();
-	Controller->TargetSegment->ProceduralMeshData->Triangles.Empty();
-	Controller->TargetSegment->ProceduralMeshData->UVs.Empty();
-	Controller->TargetSegment->NumTriangles = 0;
-	Controller->TargetSegment->IsUVReversed = true;
+	Controller->TargetSegments[0]->ProceduralMeshData->Vertices.Empty();
+	Controller->TargetSegments[0]->ProceduralMeshData->Triangles.Empty();
+	Controller->TargetSegments[0]->ProceduralMeshData->UVs.Empty();
+	Controller->TargetSegments[0]->NumTriangles = 0;
+	Controller->TargetSegments[0]->IsUVReversed = true;
 }
 
 void AHair::AssignPositions(FVector InP1, FVector InP2)
@@ -369,7 +370,7 @@ void AHair::AddVertices(int FirstIndex, TArray<FVector> InVertices, FVector Dire
 
 	for (int i = FirstIndex; i <= MiddleMeshData->Vertices.Num() - 1; i++)
 	{
-		Controller->TargetSegment->ProceduralMeshData->Vertices.Add(MapVertex(InVertices[i], Direction, Normal, 0.0f, 0.0f, Weight));
+		Controller->TargetSegments[0]->ProceduralMeshData->Vertices.Add(MapVertex(InVertices[i], Direction, Normal, 0.0f, 0.0f, Weight));
 	}
 }
 
@@ -381,13 +382,13 @@ void AHair::AddTriangles()
 	// Get player controllers
 	AMyPlayerController* Controller = Cast<AMyPlayerController>(World->GetFirstPlayerController());
 
-	if (!Controller || !Controller->TargetSegment) return;
+	if (!Controller || !Controller->TargetSegments[0]) return;
 
 	for (int i = 0; i <= MiddleMeshData->Triangles.Num() - 1; i++)
 	{
-		Controller->TargetSegment->ProceduralMeshData->Triangles.Add(Controller->TargetSegment->NumTriangles + MiddleMeshData->Triangles[i]);
+		Controller->TargetSegments[0]->ProceduralMeshData->Triangles.Add(Controller->TargetSegments[0]->NumTriangles + MiddleMeshData->Triangles[i]);
 	}
-	Controller->TargetSegment->NumTriangles = Controller->TargetSegment->NumTriangles + MiddleMeshData->Vertices.Num() - 2;
+	Controller->TargetSegments[0]->NumTriangles = Controller->TargetSegments[0]->NumTriangles + MiddleMeshData->Vertices.Num() - 2;
 }
 
 void AHair::AddUVs(bool IsFirst)
@@ -400,22 +401,22 @@ void AHair::AddUVs(bool IsFirst)
 
 	if (IsFirst)
 	{
-		Controller->TargetSegment->ProceduralMeshData->UVs.Append(MiddleMeshData->UVs);
+		Controller->TargetSegments[0]->ProceduralMeshData->UVs.Append(MiddleMeshData->UVs);
 	}
 	else
 	{
-		if (Controller->TargetSegment->IsUVReversed)
+		if (Controller->TargetSegments[0]->IsUVReversed)
 		{
-			Controller->TargetSegment->ProceduralMeshData->UVs.Add(MiddleMeshData->UVs[0]);
-			Controller->TargetSegment->ProceduralMeshData->UVs.Add(MiddleMeshData->UVs[1]);
+			Controller->TargetSegments[0]->ProceduralMeshData->UVs.Add(MiddleMeshData->UVs[0]);
+			Controller->TargetSegments[0]->ProceduralMeshData->UVs.Add(MiddleMeshData->UVs[1]);
 		}
 		else
 		{
 			int N = MiddleMeshData->UVs.Num();
-			Controller->TargetSegment->ProceduralMeshData->UVs.Add(MiddleMeshData->UVs[N-2]);
-			Controller->TargetSegment->ProceduralMeshData->UVs.Add(MiddleMeshData->UVs[N-1]);
+			Controller->TargetSegments[0]->ProceduralMeshData->UVs.Add(MiddleMeshData->UVs[N-2]);
+			Controller->TargetSegments[0]->ProceduralMeshData->UVs.Add(MiddleMeshData->UVs[N-1]);
 		}
-		Controller->TargetSegment->IsUVReversed = !Controller->TargetSegment->IsUVReversed;
+		Controller->TargetSegments[0]->IsUVReversed = !Controller->TargetSegments[0]->IsUVReversed;
 	}
 }
 
