@@ -13,6 +13,7 @@
 #include "Runtime/Engine/Classes/Components/SplineComponent.h"
 #include "Runtime/Core/Public/Misc/CoreMisc.h"
 #include "Runtime/Core/Public/HAL/PlatformFilemanager.h"
+#include "Runtime/Engine/Classes/Components/PrimitiveComponent.h"
 
 AHair::AHair()
 {
@@ -89,18 +90,6 @@ void AHair::SetupMesh()
 	CalculateEndPoints(MiddleMeshData->Vertices);
 }
 
-AMyPlayerController* AHair::GetController()
-{
-	UWorld* const World = GetWorld();
-	if (!World) return NULL;
-
-	// Get player controllers
-	AMyPlayerController* Controller = Cast<AMyPlayerController>(World->GetFirstPlayerController());
-
-	if (!Controller) return NULL;
-
-	return Controller;
-}
 
 //////////////////// PROCEDURAL MESH GENERATION ////////////////////
 
@@ -122,8 +111,8 @@ AHairSegment* AHair::SpawnSegment()
 
 	// Spawn segment object
 	FActorSpawnParameters SpawnParams;
-	Controller->TargetSegments.Empty();
-	Controller->TargetSegments.Add(World->SpawnActor<AHairSegment>(AHairSegment::StaticClass(), FVector(0.0f, 0.0f, 0.0f), FRotator(0.0f), SpawnParams));
+	DeselectAll();
+	SelectSegment(World->SpawnActor<AHairSegment>(AHairSegment::StaticClass(), FVector(0.0f, 0.0f, 0.0f), FRotator(0.0f), SpawnParams));
 	// Setup new segment
 	Controller->TargetSegments[0]->AddSplinePoint(Controller->HitResult.Location);
 	Controller->TargetSegments[0]->Normals.Add(Controller->HitResult.Normal);
@@ -236,12 +225,11 @@ void AHair::UpdateSegment(AHairSegment* InSegment)
 	// Create mesh 
 	AMyPlayerController* Controller = GetController();
 	if (!Controller || !Controller->TargetSegments[0]) return;
-	//InSegment->ProceduralMesh->CreateMeshSection(0, Vertices, Triangles, TArray<FVector>(), UVs, TArray<FColor>(), TArray<FProcMeshTangent>(), false);
 	InSegment->ProceduralMesh->CreateMeshSection(0, Controller->TargetSegments[0]->ProceduralMeshData->Vertices,
 													Controller->TargetSegments[0]->ProceduralMeshData->Triangles,
 													TArray<FVector>(), 
 													Controller->TargetSegments[0]->ProceduralMeshData->UVs,
-													TArray<FColor>(), TArray<FProcMeshTangent>(), false);
+													TArray<FColor>(), TArray<FProcMeshTangent>(), true);
 }
 
 void AHair::CalculateEndPoints(TArray<FVector> InVertices)
@@ -417,9 +405,29 @@ void AHair::AddUVs(bool IsFirst)
 //////////////////// SELECTION ////////////////////
 void AHair::SelectSegment(AHairSegment* Segment)
 {
-	
+	AMyPlayerController* Controller = GetController();
+	if (!Controller) return;
+
+	for (int i = 0; i < Segment->Nodes.Num(); i++)
+	{
+		Segment->Nodes[i]->StaticMesh->SetRenderCustomDepth(true);
+	}
+
+	Controller->TargetSegments.Add(Segment);
+	Segment->ProceduralMesh->SetRenderCustomDepth(true);
 }
 
+void AHair::DeselectAll()
+{
+	AMyPlayerController* Controller = GetController();
+	if (!Controller) return;
+
+	for (int i = 0; i < Controller->TargetSegments.Num(); i++)
+	{
+		Controller->TargetSegments[i]->ProceduralMesh->SetRenderCustomDepth(false);
+	}
+	Controller->TargetSegments.Empty();
+}
 
 //////////////////// FILE MANAGEMENT ////////////////////
 
@@ -480,4 +488,20 @@ void AHair::ExportHair()
 			UE_LOG(LogTemp, Warning, TEXT("Exported hair to %s"), *AbsoluteFilePath);
 		}
 	}
+}
+
+
+//////////////////// MISC ////////////////////
+
+AMyPlayerController* AHair::GetController()
+{
+	UWorld* const World = GetWorld();
+	if (!World) return NULL;
+
+	// Get player controllers
+	AMyPlayerController* Controller = Cast<AMyPlayerController>(World->GetFirstPlayerController());
+
+	if (!Controller) return NULL;
+
+	return Controller;
 }

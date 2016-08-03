@@ -120,6 +120,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Selection")
 	void SelectSegment(AHairSegment* Segment);
 
+	UFUNCTION(BlueprintCallable, Category = "Selection")
+	void DeselectAll();
 
 	//////////////////// FILE MANAGEMENT ////////////////////
 
@@ -129,5 +131,6 @@ public:
 	
 	//////////////////// MISC ////////////////////
 
+	UFUNCTION(BlueprintCallable, Category = "Misc")
 	AMyPlayerController* GetController();
 };
