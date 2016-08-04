@@ -11,6 +11,13 @@ class ARCHSHAIRYLAB_API AHairSegment : public AActor
 	GENERATED_BODY()
 	
 public:	
+	// Segment Attributes
+	UPROPERTY(BlueprintReadWrite)
+	float SegmentXWidth = 0.0f;
+
+	UPROPERTY(BlueprintReadWrite)
+	float SegmentYWidth = 0.0f;
+
 	// Procedural Mesh Generation
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Mesh Components")
 	class UProceduralMeshComponent* ProceduralMesh;

@@ -18,7 +18,7 @@ public:
 	virtual void BeginPlay() override;
 
 public:
-	//////////////////// LAYER ////////////////////
+	//// LAYER ////
 	UPROPERTY(BlueprintReadWrite)
 	TArray<class AHairLayer*> HairLayers;
 
@@ -29,7 +29,7 @@ public:
 	void AddNewLayer();
 
 
-	//////////////////// HAIR ATTRIBUTES ////////////////////
+	//// HAIR ATTRIBUTES ////
 
 	UPROPERTY(BlueprintReadWrite)
 	float GlobalXWidth = 50.0f;
@@ -38,7 +38,7 @@ public:
 	float GlobalYWidth = 10.0f;
 
 
-	//////////////////// PROCEDURAL MESH GENERATION ////////////////////
+	//// PROCEDURAL MESH GENERATION ////
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UProceduralMeshData* StartMeshData;
@@ -100,22 +100,28 @@ public:
 	void UpdateSegment(class AHairSegment* InSegment);
 
 	UFUNCTION(BlueprintCallable, Category = "Procedural Mesh Generation")
-	void ClearMeshData();
+	void ClearMeshData(AHairSegment* InSegment);
 
 	UFUNCTION(BlueprintCallable, Category = "Procedural Mesh Methods")
-	FVector MapVertex(FVector V, FVector Direction, FVector Normal, float XWidth, float YWidth, float InWeight);
+	FVector MapVertex(FVector V, FVector Direction, FVector Normal, AHairSegment* Segment, float InWeight);
 
 	UFUNCTION(BlueprintCallable, Category = "Procedural Mesh Methods")
-	void AddVertices(int FirstIndex, TArray<FVector> InVertices, FVector Direction, FVector Normal);
+	void AddVertices(int FirstIndex, TArray<FVector> InVertices, AHairSegment* InSegment, int i);
 
 	UFUNCTION(BlueprintCallable, Category = "Procedural Mesh Methods")
-	void AddTriangles();
+	void AddTriangles(AHairSegment* InSegment);
 
 	UFUNCTION(BlueprintCallable, Category = "Procedural Mesh Methods")
-	void AddUVs(bool IsFirst);
+	void AddUVs(AHairSegment* InSegment, bool IsFirst);
 
 
-	//////////////////// SELECTION ////////////////////
+	//// SEGMENT ////
+
+	UFUNCTION(BlueprintCallable, Category = "Selection")
+	void SetSelectedSegmentXWidth(float InVal);
+
+
+	//// SELECTION ////
 
 	UFUNCTION(BlueprintCallable, Category = "Selection")
 	void SelectSegment(AHairSegment* Segment);
@@ -123,13 +129,14 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Selection")
 	void DeselectAll();
 
-	//////////////////// FILE MANAGEMENT ////////////////////
+
+	//// FILE MANAGEMENT ////
 
 	UFUNCTION(BlueprintCallable, Category = "File Management")
 	void ExportHair();
 
 	
-	//////////////////// MISC ////////////////////
+	//// MISC ////
 
 	UFUNCTION(BlueprintCallable, Category = "Misc")
 	AMyPlayerController* GetController();

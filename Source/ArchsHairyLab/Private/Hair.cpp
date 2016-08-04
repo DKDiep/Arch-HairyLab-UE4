@@ -91,7 +91,7 @@ void AHair::SetupMesh()
 }
 
 
-//////////////////// PROCEDURAL MESH GENERATION ////////////////////
+//// PROCEDURAL MESH GENERATION ////
 
 AHairSegment* AHair::SpawnSegment()
 {
@@ -196,7 +196,7 @@ void AHair::UpdateSegment(AHairSegment* InSegment)
 {
 	if (!InSegment) return;
 	InSegment->ProceduralMesh->ClearAllMeshSections();
-	ClearMeshData();
+	ClearMeshData(InSegment);
 
 	//Populate new data
 	if (!MiddleMeshData) return;
@@ -210,32 +210,30 @@ void AHair::UpdateSegment(AHairSegment* InSegment)
 		if (i == 1)
 		{
 			Weight = 1.0f;
-			AddVertices(0, MiddleMeshData->Vertices, InSegment->Spline->GetDirectionAtSplinePoint(i, ESplineCoordinateSpace::Local), InSegment->Normals[i]);
-			AddTriangles();
-			AddUVs(true);
+			AddVertices(0, MiddleMeshData->Vertices, InSegment, i);
+			AddTriangles(InSegment);
+			AddUVs(InSegment, true);
 		}
 		else
 		{
-			AddVertices(2, MiddleMeshData->Vertices, InSegment->Spline->GetDirectionAtSplinePoint(i, ESplineCoordinateSpace::Local), InSegment->Normals[i]);
-			AddTriangles();
-			AddUVs(false);
+			AddVertices(2, MiddleMeshData->Vertices, InSegment, i);
+			AddTriangles(InSegment);
+			AddUVs(InSegment, false);
 		}
 	}
 
 	// Create mesh 
-	AMyPlayerController* Controller = GetController();
-	if (!Controller || !Controller->TargetSegments[0]) return;
-	InSegment->ProceduralMesh->CreateMeshSection(0, Controller->TargetSegments[0]->ProceduralMeshData->Vertices,
-													Controller->TargetSegments[0]->ProceduralMeshData->Triangles,
+	InSegment->ProceduralMesh->CreateMeshSection(0, InSegment->ProceduralMeshData->Vertices,
+													InSegment->ProceduralMeshData->Triangles,
 													TArray<FVector>(), 
-													Controller->TargetSegments[0]->ProceduralMeshData->UVs,
+													InSegment->ProceduralMeshData->UVs,
 													TArray<FColor>(), TArray<FProcMeshTangent>(), true);
 	// Duplicate for outline as custom depth not available for translucent materials
-	InSegment->OutlineMesh->CreateMeshSection(0, Controller->TargetSegments[0]->ProceduralMeshData->Vertices,
-		Controller->TargetSegments[0]->ProceduralMeshData->Triangles,
-		TArray<FVector>(),
-		Controller->TargetSegments[0]->ProceduralMeshData->UVs,
-		TArray<FColor>(), TArray<FProcMeshTangent>(), true);
+	InSegment->OutlineMesh->CreateMeshSection(0, InSegment->ProceduralMeshData->Vertices,
+													InSegment->ProceduralMeshData->Triangles,
+													TArray<FVector>(),
+													InSegment->ProceduralMeshData->UVs,
+													TArray<FColor>(), TArray<FProcMeshTangent>(), true);
 }
 
 void AHair::CalculateEndPoints(TArray<FVector> InVertices)
@@ -297,16 +295,13 @@ void AHair::CalculateEndPoints(TArray<FVector> InVertices)
 	}
 }
 
-void AHair::ClearMeshData()
+void AHair::ClearMeshData(AHairSegment* InSegment)
 {
-	AMyPlayerController* Controller = GetController();
-	if (!Controller || !Controller->TargetSegments[0]) return;
-
-	Controller->TargetSegments[0]->ProceduralMeshData->Vertices.Empty();
-	Controller->TargetSegments[0]->ProceduralMeshData->Triangles.Empty();
-	Controller->TargetSegments[0]->ProceduralMeshData->UVs.Empty();
-	Controller->TargetSegments[0]->NumTriangles = 0;
-	Controller->TargetSegments[0]->IsUVReversed = true;
+	InSegment->ProceduralMeshData->Vertices.Empty();
+	InSegment->ProceduralMeshData->Triangles.Empty();
+	InSegment->ProceduralMeshData->UVs.Empty();
+	InSegment->NumTriangles = 0;
+	InSegment->IsUVReversed = true;
 }
 
 void AHair::AssignPositions(FVector InP1, FVector InP2)
@@ -315,8 +310,14 @@ void AHair::AssignPositions(FVector InP1, FVector InP2)
 	P2 = InP2;
 }
 
-FVector AHair::MapVertex(FVector V, FVector Direction, FVector Normal, float XWidth, float YWidth, float InWeight)
+FVector AHair::MapVertex(FVector V, FVector Direction, FVector Normal, AHairSegment* Segment, float InWeight)
 {
+	if (!Segment)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Invalid Segment during vertex mapping"));
+		return FVector(0, 0, 0);
+	}
+
 	// Find percentage distance between A to B
 	float VDistance = AnchorLengthStart.Z - V.Z;
 	float Distance = FVector::Dist(AnchorLengthStart, AnchorLengthEnd);
@@ -337,7 +338,8 @@ FVector AHair::MapVertex(FVector V, FVector Direction, FVector Normal, float XWi
 	else
 		XRatio = -0.5f + XDistance / XDisplacement;
 	// Apply X direction
-	V2 = V2 + (DirX*GlobalXWidth*XRatio*InWeight);
+	float TotalWidth = GlobalXWidth +Segment->SegmentXWidth;
+	V2 = V2 + (DirX*TotalWidth*XRatio*InWeight);
 	//V2 = V2 + (DirX*V.X*InWeight);
 
 	// Find percentage distance of Y
@@ -353,62 +355,70 @@ FVector AHair::MapVertex(FVector V, FVector Direction, FVector Normal, float XWi
 	return V2;
 }
 
-void AHair::AddVertices(int FirstIndex, TArray<FVector> InVertices, FVector Direction, FVector Normal)
+void AHair::AddVertices(int FirstIndex, TArray<FVector> InVertices, AHairSegment* InSegment, int i)
 {
-	UWorld* const World = GetWorld();
-	if (!World) return;
-
 	// Get player controllers
 	AMyPlayerController* Controller = GetController();
-	if (!Controller || !Controller->TargetSegments[0]) return;
-	for (int i = FirstIndex; i <= MiddleMeshData->Vertices.Num() - 1; i++)
+	if (!Controller || !InSegment) return;
+
+	FVector Direction = InSegment->Spline->GetDirectionAtSplinePoint(i, ESplineCoordinateSpace::Local);
+	FVector Normal = InSegment->Normals[i];
+	for (int j = FirstIndex; j <= MiddleMeshData->Vertices.Num() - 1; j++)
 	{
-		Controller->TargetSegments[0]->ProceduralMeshData->Vertices.Add(MapVertex(InVertices[i], Direction, Normal, 0.0f, 0.0f, Weight));
+		InSegment->ProceduralMeshData->Vertices.Add(MapVertex(InVertices[j], Direction, Normal, InSegment, Weight));
 	}
 }
 
-void AHair::AddTriangles()
+void AHair::AddTriangles(AHairSegment* InSegment)
 {
-	UWorld* const World = GetWorld();
-	if (!World) return;
-	AMyPlayerController* Controller = GetController();
-	if (!Controller || !Controller->TargetSegments[0]) return;
+	if (!InSegment) return;
 
 	for (int i = 0; i <= MiddleMeshData->Triangles.Num() - 1; i++)
 	{
-		Controller->TargetSegments[0]->ProceduralMeshData->Triangles.Add(Controller->TargetSegments[0]->NumTriangles + MiddleMeshData->Triangles[i]);
+		InSegment->ProceduralMeshData->Triangles.Add(InSegment->NumTriangles + MiddleMeshData->Triangles[i]);
 	}
-	Controller->TargetSegments[0]->NumTriangles = Controller->TargetSegments[0]->NumTriangles + MiddleMeshData->Vertices.Num() - 2;
+	InSegment->NumTriangles = InSegment->NumTriangles + MiddleMeshData->Vertices.Num() - 2;
 }
 
-void AHair::AddUVs(bool IsFirst)
+void AHair::AddUVs(AHairSegment* InSegment, bool IsFirst)
 {
-	UWorld* const World = GetWorld();
-	if (!World) return;
-	AMyPlayerController* Controller = GetController();
-	if (!Controller || !Controller->TargetSegments[0]) return;
+	if (!InSegment) return;
 	if (IsFirst)
 	{
-		Controller->TargetSegments[0]->ProceduralMeshData->UVs.Append(MiddleMeshData->UVs);
+		InSegment->ProceduralMeshData->UVs.Append(MiddleMeshData->UVs);
 	}
 	else
 	{
-		if (Controller->TargetSegments[0]->IsUVReversed)
+		if (InSegment->IsUVReversed)
 		{
-			Controller->TargetSegments[0]->ProceduralMeshData->UVs.Add(MiddleMeshData->UVs[0]);
-			Controller->TargetSegments[0]->ProceduralMeshData->UVs.Add(MiddleMeshData->UVs[1]);
+			InSegment->ProceduralMeshData->UVs.Add(MiddleMeshData->UVs[0]);
+			InSegment->ProceduralMeshData->UVs.Add(MiddleMeshData->UVs[1]);
 		}
 		else
 		{
 			int N = MiddleMeshData->UVs.Num();
-			Controller->TargetSegments[0]->ProceduralMeshData->UVs.Add(MiddleMeshData->UVs[N-2]);
-			Controller->TargetSegments[0]->ProceduralMeshData->UVs.Add(MiddleMeshData->UVs[N-1]);
+			InSegment->ProceduralMeshData->UVs.Add(MiddleMeshData->UVs[N-2]);
+			InSegment->ProceduralMeshData->UVs.Add(MiddleMeshData->UVs[N-1]);
 		}
-		Controller->TargetSegments[0]->IsUVReversed = !Controller->TargetSegments[0]->IsUVReversed;
+		InSegment->IsUVReversed = !InSegment->IsUVReversed;
 	}
 }
 
-//////////////////// SELECTION ////////////////////
+
+//// SEGMENT ////
+
+void AHair::SetSelectedSegmentXWidth(float InVal)
+{
+	AMyPlayerController* Controller = GetController();
+	for (int i = 0; i < Controller->TargetSegments.Num(); i++)
+	{
+		Controller->TargetSegments[i]->SegmentXWidth = InVal;
+	}
+}
+
+
+//// SELECTION ////
+
 void AHair::SelectSegment(AHairSegment* Segment)
 {
 	AMyPlayerController* Controller = GetController();
@@ -430,7 +440,8 @@ void AHair::DeselectAll()
 	Controller->TargetSegments.Empty();
 }
 
-//////////////////// FILE MANAGEMENT ////////////////////
+
+//// FILE MANAGEMENT ////
 
 void AHair::ExportHair()
 {
@@ -492,7 +503,7 @@ void AHair::ExportHair()
 }
 
 
-//////////////////// MISC ////////////////////
+//// MISC ////
 
 AMyPlayerController* AHair::GetController()
 {
