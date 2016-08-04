@@ -18,6 +18,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UProceduralMeshData* ProceduralMeshData;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Mesh Components")
+	class UProceduralMeshComponent* OutlineMesh;
+
 	UPROPERTY(BlueprintReadWrite)
 	int NumTriangles = 0;
 	UPROPERTY(BlueprintReadWrite)

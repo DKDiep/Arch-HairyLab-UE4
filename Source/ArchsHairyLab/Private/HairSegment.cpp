@@ -16,6 +16,12 @@ AHairSegment::AHairSegment()
 	ProceduralMesh = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("GeneratedMesh"));
 	RootComponent = ProceduralMesh;
 
+	OutlineMesh = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("OutlineMesh"));
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> BasicMat(TEXT("MaterialInterface'/Game/Materials/M_Basic.M_Basic'"));
+	if (BasicMat.Succeeded())
+		OutlineMesh->SetMaterial(0, BasicMat.Object);
+	OutlineMesh->SetRenderInMainPass(false);
+
 	Spline = CreateDefaultSubobject<USplineComponent>(TEXT("Spline"));
 	Spline->SetupAttachment(RootComponent);
 	Spline->ClearSplinePoints();

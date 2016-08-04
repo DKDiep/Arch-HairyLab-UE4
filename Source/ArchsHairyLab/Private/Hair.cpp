@@ -230,6 +230,12 @@ void AHair::UpdateSegment(AHairSegment* InSegment)
 													TArray<FVector>(), 
 													Controller->TargetSegments[0]->ProceduralMeshData->UVs,
 													TArray<FColor>(), TArray<FProcMeshTangent>(), true);
+	// Duplicate for outline as custom depth not available for translucent materials
+	InSegment->OutlineMesh->CreateMeshSection(0, Controller->TargetSegments[0]->ProceduralMeshData->Vertices,
+		Controller->TargetSegments[0]->ProceduralMeshData->Triangles,
+		TArray<FVector>(),
+		Controller->TargetSegments[0]->ProceduralMeshData->UVs,
+		TArray<FColor>(), TArray<FProcMeshTangent>(), true);
 }
 
 void AHair::CalculateEndPoints(TArray<FVector> InVertices)
@@ -408,13 +414,8 @@ void AHair::SelectSegment(AHairSegment* Segment)
 	AMyPlayerController* Controller = GetController();
 	if (!Controller) return;
 
-	for (int i = 0; i < Segment->Nodes.Num(); i++)
-	{
-		Segment->Nodes[i]->StaticMesh->SetRenderCustomDepth(true);
-	}
-
 	Controller->TargetSegments.Add(Segment);
-	Segment->ProceduralMesh->SetRenderCustomDepth(true);
+	Segment->OutlineMesh->SetRenderCustomDepth(true);
 }
 
 void AHair::DeselectAll()
@@ -424,7 +425,7 @@ void AHair::DeselectAll()
 
 	for (int i = 0; i < Controller->TargetSegments.Num(); i++)
 	{
-		Controller->TargetSegments[i]->ProceduralMesh->SetRenderCustomDepth(false);
+		Controller->TargetSegments[i]->OutlineMesh->SetRenderCustomDepth(false);
 	}
 	Controller->TargetSegments.Empty();
 }
