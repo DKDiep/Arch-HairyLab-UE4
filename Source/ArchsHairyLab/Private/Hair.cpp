@@ -444,23 +444,71 @@ void AHair::SelectSegment(AHairSegment* Segment)
 	Segment->OutlineMesh->SetRenderCustomDepth(true);
 }
 
-void AHair::DeleteSelected()
+void AHair::RemoveSegment(AHairSegment* Segment)
+{
+	AMyPlayerController* Controller = GetController();
+	if (!Controller) return;
+	for (int i = 0; i < Segment->Nodes.Num(); i++)
+	{
+		Segment->Nodes[i]->Destroy();
+	}
+	Controller->TargetSegments.Remove(Segment);
+	Segment->Destroy();
+}
+
+void AHair::RemoveSelected()
 {
 	AMyPlayerController* Controller = GetController();
 	if (!Controller) return;
 	for (int i = 0; i < Controller->TargetSegments.Num(); i++)
 	{
 		AHairSegment* Segment = Controller->TargetSegments[i];
-		for (int j = 0; j < Segment->Nodes.Num(); j++)
-		{
-			Segment->Nodes[j]->Destroy();
-		}
-		Segment->Destroy();
+		RemoveSegment(Segment);
 	}
 	Controller->TargetSegments.Empty();
 }
 
 //// LAYER ////
+
+void AHair::SelectLayer(AHairLayer* Layer, bool IsAppend)
+{
+	AMyPlayerController* Controller = GetController();
+	if (!Controller) return;
+
+	if (!IsAppend)
+		DeselectAll();
+	
+	for (int i = 0; i < Layer->Segments.Num(); i++)
+	{
+		SelectSegment(Layer->Segments[i]);
+	}
+}
+
+void AHair::RemoveLayer(AHairLayer* Layer)
+{
+	AMyPlayerController* Controller = GetController();
+	if (!Controller) return;
+
+	// Remove all segments beforehand
+	for (int i = 0; i < Layer->Segments.Num(); i++)
+	{
+		RemoveSegment(Layer->Segments[i]);
+	}
+
+	// Only delete layer if there is more than one
+	if (HairLayers.Num() > 1)
+	{
+		HairLayers.Remove(Layer);
+
+		// Pick top layer when removing selected
+		if (Controller->TargetLayer == Layer)
+		{
+			Controller->TargetLayer = HairLayers[0];
+		}
+
+		Layer->Destroy();
+	}	
+}
 
 
 //// FILE MANAGEMENT ////

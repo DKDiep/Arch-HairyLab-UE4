@@ -127,7 +127,20 @@ public:
 	void SelectSegment(AHairSegment* Segment);
 
 	UFUNCTION(BlueprintCallable, Category = "Selection")
-	void DeleteSelected();
+	void RemoveSegment(AHairSegment* Segment);
+
+	UFUNCTION(BlueprintCallable, Category = "Selection")
+	void RemoveSelected();
+
+
+	//// LAYER ////
+
+	UFUNCTION(BlueprintCallable, Category = "Selection")
+	void SelectLayer(AHairLayer* Layer, bool IsAppend);
+
+	UFUNCTION(BlueprintCallable, Category = "Selection")
+	void RemoveLayer(AHairLayer* Layer);
+
 
 	//// FILE MANAGEMENT ////
 
