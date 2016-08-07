@@ -120,6 +120,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Selection")
 	void SetSelectedSegmentXWidth(float InVal);
 
+	UFUNCTION(BlueprintCallable, Category = "Selection")
+	void SetSelectedQuality(float InVal);
+
 
 	//// SELECTION ////
 

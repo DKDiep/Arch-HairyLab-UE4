@@ -18,6 +18,9 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	float SegmentYWidth = 0.0f;
 
+	UPROPERTY(BlueprintReadWrite)
+	int NumSegments = 4;
+
 	// Procedural Mesh Generation
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Mesh Components")
 	class UProceduralMeshComponent* ProceduralMesh;

@@ -14,6 +14,7 @@
 #include "Runtime/Core/Public/Misc/CoreMisc.h"
 #include "Runtime/Core/Public/HAL/PlatformFilemanager.h"
 #include "Runtime/Engine/Classes/Components/PrimitiveComponent.h"
+#include "Runtime/Core/Public/GenericPlatform/GenericPlatformMath.h"
 
 AHair::AHair()
 {
@@ -194,34 +195,37 @@ void AHair::UpdateLayer(AHairLayer* InLayer)
 
 void AHair::UpdateSegment(AHairSegment* InSegment)
 {
-	if (!InSegment) return;
+	if (!InSegment || InSegment->Spline->GetNumberOfSplinePoints() < 2) return;
 	InSegment->ProceduralMesh->ClearAllMeshSections();
 	ClearMeshData(InSegment);
 
 	//Populate new data
 	if (!MiddleMeshData) return;
-	for (int i = 1; i <= InSegment->Spline->GetNumberOfSplinePoints() - 1; i++)
+	for (int i = 0; i <= InSegment->NumSegments; i++)
 	{
-		AssignPositions(InSegment->Spline->GetLocationAtSplinePoint(i - 1, ESplineCoordinateSpace::Local), InSegment->Spline->GetLocationAtSplinePoint(i, ESplineCoordinateSpace::Local));
-		float Distance = InSegment->Spline->GetDistanceAlongSplineAtSplinePoint(i);
-		float TotalDistance = InSegment->Spline->GetDistanceAlongSplineAtSplinePoint(InSegment->Spline->GetNumberOfSplinePoints()-1);
+		float TotalDistance = InSegment->Spline->GetSplineLength();
+		float Distance = (TotalDistance / InSegment->NumSegments)*i;
+		float NextDistance = (TotalDistance / InSegment->NumSegments)*i+1;
+		AssignPositions(InSegment->Spline->GetLocationAtDistanceAlongSpline(Distance, ESplineCoordinateSpace::Local),
+			InSegment->Spline->GetLocationAtDistanceAlongSpline(NextDistance, ESplineCoordinateSpace::Local));
 		Weight = 1.0f - Distance / TotalDistance;
 
-		if (i == 1)
+		// Interpolate distance to closest spline point index
+		float Delta = ((InSegment->Spline->GetNumberOfSplinePoints() - 1)*1.0f) / (InSegment->NumSegments*1.0f);
+		int Index = FGenericPlatformMath::RoundToInt(i*Delta);
+		if (i == 0)
 		{
-			Weight = 1.0f;
-			AddVertices(0, MiddleMeshData->Vertices, InSegment, i);
+			AddVertices(0, MiddleMeshData->Vertices, InSegment, Index);
 			AddTriangles(InSegment);
 			AddUVs(InSegment, true);
 		}
 		else
 		{
-			AddVertices(2, MiddleMeshData->Vertices, InSegment, i);
+			AddVertices(2, MiddleMeshData->Vertices, InSegment, Index);
 			AddTriangles(InSegment);
 			AddUVs(InSegment, false);
 		}
 	}
-
 	// Create mesh 
 	InSegment->ProceduralMesh->CreateMeshSection(0, InSegment->ProceduralMeshData->Vertices,
 													InSegment->ProceduralMeshData->Triangles,
@@ -416,6 +420,14 @@ void AHair::SetSelectedSegmentXWidth(float InVal)
 	}
 }
 
+void AHair::SetSelectedQuality(float InVal)
+{
+	AMyPlayerController* Controller = GetController();
+	for (int i = 0; i < Controller->TargetSegments.Num(); i++)
+	{
+		Controller->TargetSegments[i]->NumSegments = InVal;
+	}
+}
 
 //// SELECTION ////
 
