@@ -21,6 +21,9 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	int NumSegments = 4;
 
+	UPROPERTY(BlueprintReadWrite)
+	class AHairLayer* HairLayer;
+
 	// Procedural Mesh Generation
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Mesh Components")
 	class UProceduralMeshComponent* ProceduralMesh;

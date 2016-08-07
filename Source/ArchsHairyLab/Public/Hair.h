@@ -132,6 +132,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Selection")
 	void RemoveSelected();
 
+	UFUNCTION(BlueprintCallable, Category = "Selection")
+	void DeselectAll();
+
+	UFUNCTION(BlueprintCallable, Category = "Selection")
+	void DeselectSegment(AHairSegment* Segment);
 
 	//// LAYER ////
 
@@ -141,6 +146,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Selection")
 	void RemoveLayer(AHairLayer* Layer);
 
+	UFUNCTION(BlueprintCallable, Category = "Selection")
+	void LayerLock(AHairLayer* Layer);
+
+	UFUNCTION(BlueprintCallable, Category = "Selection")
+	void LayerVisibility(AHairLayer* Layer);
+
 
 	//// FILE MANAGEMENT ////
 
@@ -149,10 +160,6 @@ public:
 
 	
 	//// MISC ////
-
-	UFUNCTION(BlueprintCallable, Category = "Selection")
-	void DeselectAll();
-
 	UFUNCTION(BlueprintCallable, Category = "Misc")
 	AMyPlayerController* GetController();
 };

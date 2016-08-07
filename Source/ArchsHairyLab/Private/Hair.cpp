@@ -118,6 +118,7 @@ AHairSegment* AHair::SpawnSegment()
 	FVector Loc = Controller->HitResult.Location + Controller->HitResult.Normal*10.0f;
 	Controller->TargetSegments[0]->AddSplinePoint(Loc);
 	Controller->TargetSegments[0]->Normals.Add(Controller->HitResult.Normal);
+	Controller->TargetSegments[0]->HairLayer = Controller->TargetLayer;
 
 	// Set IsExtending
 	IsExtending = true;
@@ -477,11 +478,31 @@ void AHair::SelectLayer(AHairLayer* Layer, bool IsAppend)
 
 	if (!IsAppend)
 		DeselectAll();
-	
+
 	for (int i = 0; i < Layer->Segments.Num(); i++)
 	{
 		SelectSegment(Layer->Segments[i]);
 	}
+}
+
+void AHair::DeselectSegment(AHairSegment* Segment)
+{
+	AMyPlayerController* Controller = GetController();
+	if (!Controller) return;
+	Segment->OutlineMesh->SetRenderCustomDepth(false);
+	Controller->TargetSegments.Remove(Segment);
+}
+
+void AHair::DeselectAll()
+{
+	AMyPlayerController* Controller = GetController();
+	if (!Controller) return;
+
+	for (int i = 0; i < Controller->TargetSegments.Num(); i++)
+	{
+		DeselectSegment(Controller->TargetSegments[i]);
+	}
+	Controller->TargetSegments.Empty();
 }
 
 void AHair::RemoveLayer(AHairLayer* Layer)
@@ -508,6 +529,38 @@ void AHair::RemoveLayer(AHairLayer* Layer)
 
 		Layer->Destroy();
 	}	
+}
+
+void AHair::LayerLock(AHairLayer* Layer)
+{
+	if (!Layer->IsLocked)
+	{
+		for (int i = 0; i < Layer->Segments.Num(); i++)
+		{
+			DeselectSegment(Layer->Segments[i]);
+		}
+	}
+
+	Layer->IsLocked = !Layer->IsLocked;
+	UE_LOG(LogTemp, Warning, TEXT("layer %d"), Layer->	IsLocked);
+}
+
+void AHair::LayerVisibility(AHairLayer* Layer)
+{
+	for (int i = 0; i < Layer->Segments.Num(); i++)
+	{
+		AHairSegment* Segment = Layer->Segments[i];
+		// Remove from selection
+		DeselectSegment(Layer->Segments[i]);
+		Segment->SetActorHiddenInGame(Layer->IsVisible);
+		// Hide nodes
+		for (int j = 0; j < Segment->Nodes.Num(); j++)
+		{
+			Segment->Nodes[j]->SetActorHiddenInGame(Layer->IsVisible);
+		}
+	}
+
+	Layer->IsVisible = !Layer->IsVisible;
 }
 
 
@@ -574,18 +627,6 @@ void AHair::ExportHair()
 
 
 //// MISC ////
-
-void AHair::DeselectAll()
-{
-	AMyPlayerController* Controller = GetController();
-	if (!Controller) return;
-
-	for (int i = 0; i < Controller->TargetSegments.Num(); i++)
-	{
-		Controller->TargetSegments[i]->OutlineMesh->SetRenderCustomDepth(false);
-	}
-	Controller->TargetSegments.Empty();
-}
 
 AMyPlayerController* AHair::GetController()
 {
