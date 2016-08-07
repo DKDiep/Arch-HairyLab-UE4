@@ -139,7 +139,7 @@ void AHair::ExtendSegment()
 	UWorld* const World = GetWorld();
 	if (!World) return;
 	AMyPlayerController* Controller = GetController();
-	if (!Controller || !Controller->TargetSegments[0]) return;
+	if (!Controller || Controller->TargetSegments.Num() == 0) return;
 
 	// Set controller cursor hit result
 	Controller->GetHitResultUnderCursorByChannel(UEngineTypes::ConvertToTraceType(ECC_Camera), true, Controller->HitResult);
@@ -435,8 +435,6 @@ void AHair::SetSelectedQuality(float InVal)
 	}
 }
 
-//// SELECTION ////
-
 void AHair::SelectSegment(AHairSegment* Segment)
 {
 	AMyPlayerController* Controller = GetController();
@@ -446,17 +444,23 @@ void AHair::SelectSegment(AHairSegment* Segment)
 	Segment->OutlineMesh->SetRenderCustomDepth(true);
 }
 
-void AHair::DeselectAll()
+void AHair::DeleteSelected()
 {
 	AMyPlayerController* Controller = GetController();
 	if (!Controller) return;
-
 	for (int i = 0; i < Controller->TargetSegments.Num(); i++)
 	{
-		Controller->TargetSegments[i]->OutlineMesh->SetRenderCustomDepth(false);
+		AHairSegment* Segment = Controller->TargetSegments[i];
+		for (int j = 0; j < Segment->Nodes.Num(); j++)
+		{
+			Segment->Nodes[j]->Destroy();
+		}
+		Segment->Destroy();
 	}
 	Controller->TargetSegments.Empty();
 }
+
+//// LAYER ////
 
 
 //// FILE MANAGEMENT ////
@@ -522,6 +526,18 @@ void AHair::ExportHair()
 
 
 //// MISC ////
+
+void AHair::DeselectAll()
+{
+	AMyPlayerController* Controller = GetController();
+	if (!Controller) return;
+
+	for (int i = 0; i < Controller->TargetSegments.Num(); i++)
+	{
+		Controller->TargetSegments[i]->OutlineMesh->SetRenderCustomDepth(false);
+	}
+	Controller->TargetSegments.Empty();
+}
 
 AMyPlayerController* AHair::GetController()
 {

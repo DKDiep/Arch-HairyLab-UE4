@@ -123,15 +123,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Selection")
 	void SetSelectedQuality(float InVal);
 
-
-	//// SELECTION ////
-
 	UFUNCTION(BlueprintCallable, Category = "Selection")
 	void SelectSegment(AHairSegment* Segment);
 
 	UFUNCTION(BlueprintCallable, Category = "Selection")
-	void DeselectAll();
-
+	void DeleteSelected();
 
 	//// FILE MANAGEMENT ////
 
@@ -140,6 +136,9 @@ public:
 
 	
 	//// MISC ////
+
+	UFUNCTION(BlueprintCallable, Category = "Selection")
+	void DeselectAll();
 
 	UFUNCTION(BlueprintCallable, Category = "Misc")
 	AMyPlayerController* GetController();
