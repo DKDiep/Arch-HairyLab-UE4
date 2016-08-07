@@ -113,9 +113,10 @@ AHairSegment* AHair::SpawnSegment()
 	// Spawn segment object
 	FActorSpawnParameters SpawnParams;
 	DeselectAll();
-	SelectSegment(World->SpawnActor<AHairSegment>(AHairSegment::StaticClass(), FVector(0.0f, 0.0f, 0.0f), FRotator(0.0f), SpawnParams));
+	SelectSegment(World->SpawnActor<AHairSegment>(AHairSegment::StaticClass(), FVector(0.0f, 0.0f, 0.0f) , FRotator(0.0f), SpawnParams));
 	// Setup new segment
-	Controller->TargetSegments[0]->AddSplinePoint(Controller->HitResult.Location);
+	FVector Loc = Controller->HitResult.Location + Controller->HitResult.Normal*10.0f;
+	Controller->TargetSegments[0]->AddSplinePoint(Loc);
 	Controller->TargetSegments[0]->Normals.Add(Controller->HitResult.Normal);
 
 	// Set IsExtending
@@ -142,6 +143,11 @@ void AHair::ExtendSegment()
 
 	// Set controller cursor hit result
 	Controller->GetHitResultUnderCursorByChannel(UEngineTypes::ConvertToTraceType(ECC_Camera), true, Controller->HitResult);
+		
+	// Check hit result has actor
+	if (!Controller->HitResult.Actor.IsValid()) return;
+	// Only proceed if hit head mesh
+	if (!Controller->HitResult.Actor->IsA(AHead::StaticClass())) return;
 
 	Controller->TargetSegments[0]->AddSplinePoint(Controller->HitResult.Location + Controller->HitResult.Normal*25.0f);
 	Controller->TargetSegments[0]->Normals.Add(Controller->HitResult.Normal);
