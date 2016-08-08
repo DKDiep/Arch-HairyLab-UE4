@@ -23,11 +23,34 @@ public:
 	FHitResult HitResult = FHitResult();
 
 	UPROPERTY(BlueprintReadWrite)
-	class AHairNode* TargetNode;
+	TArray<class AHairNode*> TargetNodes;
 
 	UPROPERTY(BlueprintReadWrite)
 	TArray<class AHairSegment*> TargetSegments;
 
 	UPROPERTY(BlueprintReadWrite)
 	class AHairLayer* TargetLayer;
+
+	UPROPERTY(BlueprintReadWrite)
+	bool IsExtending;
+
+	UPROPERTY(BlueprintReadWrite)
+	bool IsRotate;
+
+	UPROPERTY(BlueprintReadWrite)
+	bool IsMove;
+
+	UPROPERTY(BlueprintReadWrite)
+	bool IsShiftDown;
+
+	UPROPERTY(BlueprintReadWrite)
+	bool IsAltDown;
+
+
+	// Methods
+	UFUNCTION(BlueprintCallable, Category = "Hair Editing")
+	void HairOp();
+
+	UFUNCTION(BlueprintCallable, Category = "Hair Editing")
+	void NodeOp();
 };

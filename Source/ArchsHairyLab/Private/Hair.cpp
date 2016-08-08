@@ -163,23 +163,23 @@ AHairNode* AHair::SpawnNode(AMyPlayerController* Controller, UWorld* World, FVec
 
 	// Spawn node object
 	FActorSpawnParameters SpawnParams;
-	Controller->TargetNode = World->SpawnActor<AHairNode>(AHairNode::StaticClass(), Location, FRotator(0.0f), SpawnParams);
-	if (Controller->TargetNode)
+	AHairNode* Node = World->SpawnActor<AHairNode>(AHairNode::StaticClass(), Location, FRotator(0.0f), SpawnParams);
+	if (Node)
 	{
 		// Resize node object
-		Controller->TargetNode->SetActorScale3D(FVector(0.03f, 0.03f, 0.03f));
+		Node->SetActorScale3D(FVector(0.03f, 0.03f, 0.03f));
 		FRotator Rot = (Controller->HitResult.Location - (Controller->HitResult.Location+Controller->HitResult.Normal)).Rotation();
-		Controller->TargetNode->SetActorRotation(Rot);
+		Node->SetActorRotation(Rot);
 		if (Controller->TargetSegments[0])
 		{
 			// Add node to list for segment
-			Controller->TargetSegments[0]->Nodes.Add(Controller->TargetNode);
+			Controller->TargetSegments[0]->Nodes.Add(Node);
 			// Assign segment reference and index for node
-			Controller->TargetNode->Segment = Controller->TargetSegments[0];
-			Controller->TargetNode->Index = Controller->TargetSegments[0]->Nodes.Num()-1;
+			Node->Segment = Controller->TargetSegments[0];
+			Node->Index = Controller->TargetSegments[0]->Nodes.Num()-1;
 		}
 	}
-	return Controller->TargetNode;
+	return Node;
 }
 
 void AHair::UpdateHair()
