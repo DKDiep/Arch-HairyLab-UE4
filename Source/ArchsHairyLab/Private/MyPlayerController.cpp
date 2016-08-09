@@ -52,6 +52,10 @@ void AMyPlayerController::OnLMB()
 			Hair->ExtendSegment();
 			Hair->UpdateHair();
 		}
+		else if (TargetSegments.Num() + TargetNodes.Num() > 0)
+		{
+			Hair->DeselectAll();
+		}
 		else
 		{
 			Segment = Hair->SpawnSegment();
