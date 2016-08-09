@@ -167,7 +167,7 @@ AHairNode* AHair::SpawnNode(AMyPlayerController* Controller, UWorld* World, FVec
 	if (Node)
 	{
 		// Resize node object
-		Node->SetActorScale3D(FVector(0.03f, 0.03f, 0.03f));
+		Node->SetActorScale3D(FVector(0.05f, 0.05f, 0.05f));
 		FRotator Rot = (Controller->HitResult.Location - (Controller->HitResult.Location+Controller->HitResult.Normal)).Rotation();
 		Node->SetActorRotation(Rot);
 		if (Controller->TargetSegments[0])
@@ -474,6 +474,9 @@ void AHair::DeselectAllSegments()
 	AMyPlayerController* Controller = GetController();
 	if (!Controller) return;
 	
+	// Disable extend mode
+	Controller->IsExtending = false;
+
 	int i = 0;
 	// Use bounded while to prevent 
 	while (Controller->TargetSegments.Num() > 0 && i < 100)

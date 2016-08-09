@@ -46,15 +46,23 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	bool IsAltDown = false;
 
+	UPROPERTY(BlueprintReadWrite)
+	float MouseX = 0.0f;
+
+	UPROPERTY(BlueprintReadWrite)
+	float MouseY = 0.0f;
+
+	UPROPERTY(BlueprintReadWrite)
+	float MouseWheel = 0.0f;
+
+	UPROPERTY(BlueprintReadWrite)
+	float MouseSpeed = 5.0f;
 
 	//// Operation Methods ////
 
 	UFUNCTION(BlueprintCallable, Category = "Hair Editing")
-	void HairOp();
+	void OnLMB();
 
 	UFUNCTION(BlueprintCallable, Category = "Hair Editing")
-	void NodeOp();
-
-	UFUNCTION(BlueprintCallable, Category = "Hair Editing")
-	void DragNode(float MouseX, float MouseY, float MouseWheel);
+	void DragNode();
 };
