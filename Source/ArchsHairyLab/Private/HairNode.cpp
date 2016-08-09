@@ -31,6 +31,5 @@ void AHairNode::BeginPlay()
 void AHairNode::Tick( float DeltaTime )
 {
 	Super::Tick( DeltaTime );
-
 }
 

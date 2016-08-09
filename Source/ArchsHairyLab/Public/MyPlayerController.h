@@ -15,7 +15,7 @@ class AMyPlayerController : public APlayerController
 	AMyPlayerController(const FObjectInitializer& ObjectInitializer);
 
 public:
-	// Data for usage
+	//// Variables ////
 	UPROPERTY(BlueprintReadWrite)
 	class AHair* Hair;
 	
@@ -32,25 +32,29 @@ public:
 	class AHairLayer* TargetLayer;
 
 	UPROPERTY(BlueprintReadWrite)
-	bool IsExtending;
+	bool IsExtending = false;
 
 	UPROPERTY(BlueprintReadWrite)
-	bool IsRotate;
+	bool IsRotate = false;
 
 	UPROPERTY(BlueprintReadWrite)
-	bool IsMove;
+	bool IsDrag = false;
 
 	UPROPERTY(BlueprintReadWrite)
-	bool IsShiftDown;
+	bool IsShiftDown = false;
 
 	UPROPERTY(BlueprintReadWrite)
-	bool IsAltDown;
+	bool IsAltDown = false;
 
 
-	// Methods
+	//// Operation Methods ////
+
 	UFUNCTION(BlueprintCallable, Category = "Hair Editing")
 	void HairOp();
 
 	UFUNCTION(BlueprintCallable, Category = "Hair Editing")
 	void NodeOp();
+
+	UFUNCTION(BlueprintCallable, Category = "Hair Editing")
+	void DragNode(float MouseX, float MouseY, float MouseWheel);
 };

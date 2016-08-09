@@ -46,17 +46,29 @@ void AMyPlayerController::HairOp()
 
 void AMyPlayerController::NodeOp()
 {
-	GetHitResultUnderCursorByChannel(UEngineTypes::ConvertToTraceType(ECC_Camera), true, HitResult);
+	//GetHitResultUnderCursorByChannel(UEngineTypes::ConvertToTraceType(ECC_Camera), true, HitResult);
 	AHairNode* Node = Cast<AHairNode>(HitResult.GetActor());
 	if (!Node) return;
 
-	if (!TargetSegments.Contains(Node->Segment)) return;
-
-	if (!false) //is shift pressed
+	if (!IsShiftDown)
 	{
-		//
-		//Hair->DeselectNodes();
+		Hair->DeselectAllNodes();
 	}
 
-	//Hair->SelectNode(Node);
+	Hair->SelectNode(Node);
+}
+
+void AMyPlayerController::DragNode(float MouseX, float MouseY, float MouseWheel)
+{
+	float Speed = 3.0f;
+	FVector Offset = FVector(MouseX, MouseY, MouseWheel)*Speed;
+	if (!IsAltDown)
+	{
+		for (int i = 0; i < TargetNodes.Num(); i++)
+		{
+			TargetNodes[i]->AddActorWorldOffset(Offset);
+			TargetNodes[i]->Segment->SetSplinePoint(TargetNodes[i]->Index, TargetNodes[i]->GetActorLocation());
+			Hair->UpdateSegment(TargetNodes[i]->Segment);
+		}
+	}
 }

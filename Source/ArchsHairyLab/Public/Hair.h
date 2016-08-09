@@ -69,8 +69,6 @@ public:
 	FVector P2 = FVector(0, 0, 0);
 
 	UPROPERTY(BlueprintReadWrite)
-	bool IsExtending = false;
-	UPROPERTY(BlueprintReadWrite)
 	float Weight = 1.0f;
 
 	UFUNCTION(BlueprintCallable, Category = "Procedural Mesh Methods")
@@ -114,6 +112,17 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Procedural Mesh Methods")
 	void AddUVs(AHairSegment* InSegment, bool IsFirst);
 
+	
+	//// NODE ////
+
+	UFUNCTION(BlueprintCallable, Category = "Selection")
+	void SelectNode(AHairNode* Node);
+
+	UFUNCTION(BlueprintCallable, Category = "Selection")
+	void DeselectNode(AHairNode* Node);
+
+	UFUNCTION(BlueprintCallable, Category = "Selection")
+	void DeselectAllNodes();
 
 	//// SEGMENT ////
 
@@ -133,10 +142,14 @@ public:
 	void RemoveSelected();
 
 	UFUNCTION(BlueprintCallable, Category = "Selection")
-	void DeselectAll();
+	void DeselectSegment(AHairSegment* Segment);
 
 	UFUNCTION(BlueprintCallable, Category = "Selection")
-	void DeselectSegment(AHairSegment* Segment);
+	void DeselectAllSegments();
+
+	UFUNCTION(BlueprintCallable, Category = "Selection")
+	void DeselectAll();
+
 
 	//// LAYER ////
 

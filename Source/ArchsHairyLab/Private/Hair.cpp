@@ -121,7 +121,7 @@ AHairSegment* AHair::SpawnSegment()
 	Controller->TargetSegments[0]->HairLayer = Controller->TargetLayer;
 
 	// Set IsExtending
-	IsExtending = true;
+	Controller->IsExtending = true;
 
 	SpawnNode(Controller, World, Controller->HitResult.Location);
 	UpdateSegment(Controller->TargetSegments[0]);
@@ -415,26 +415,42 @@ void AHair::AddUVs(AHairSegment* InSegment, bool IsFirst)
 	}
 }
 
+//// NODE ////
+
+void AHair::SelectNode(AHairNode* Node)
+{
+	AMyPlayerController* Controller = GetController();
+	if (!Controller) return;
+
+	Controller->TargetNodes.Add(Node);
+	Node->StaticMesh->SetRenderCustomDepth(true);
+}
+
+void AHair::DeselectNode(AHairNode* Node)
+{
+	AMyPlayerController* Controller = GetController();
+	if (!Controller) return;
+	Node->StaticMesh->SetRenderCustomDepth(false);
+	Controller->TargetNodes.Remove(Node);
+}
+
+void AHair::DeselectAllNodes()
+{
+	AMyPlayerController* Controller = GetController();
+	if (!Controller) return;
+
+	int i = 0;
+	// Use bounded while to prevent 
+	while (Controller->TargetNodes.Num() > 0 && i < 100)
+	{
+		DeselectNode(Controller->TargetNodes[0]);
+		i++;
+	}
+	//if (i == 100) { //Notify user }
+}
+
 
 //// SEGMENT ////
-
-void AHair::SetSelectedSegmentXWidth(float InVal)
-{
-	AMyPlayerController* Controller = GetController();
-	for (int i = 0; i < Controller->TargetSegments.Num(); i++)
-	{
-		Controller->TargetSegments[i]->SegmentXWidth = InVal;
-	}
-}
-
-void AHair::SetSelectedQuality(float InVal)
-{
-	AMyPlayerController* Controller = GetController();
-	for (int i = 0; i < Controller->TargetSegments.Num(); i++)
-	{
-		Controller->TargetSegments[i]->NumSegments = InVal;
-	}
-}
 
 void AHair::SelectSegment(AHairSegment* Segment)
 {
@@ -443,6 +459,29 @@ void AHair::SelectSegment(AHairSegment* Segment)
 
 	Controller->TargetSegments.Add(Segment);
 	Segment->OutlineMesh->SetRenderCustomDepth(true);
+}
+
+void AHair::DeselectSegment(AHairSegment* Segment)
+{
+	AMyPlayerController* Controller = GetController();
+	if (!Controller) return;
+	Segment->OutlineMesh->SetRenderCustomDepth(false);
+	Controller->TargetSegments.Remove(Segment);
+}
+
+void AHair::DeselectAllSegments()
+{
+	AMyPlayerController* Controller = GetController();
+	if (!Controller) return;
+	
+	int i = 0;
+	// Use bounded while to prevent 
+	while (Controller->TargetSegments.Num() > 0 && i < 100)
+	{
+		DeselectSegment(Controller->TargetSegments[0]);
+		i++;
+	}
+	//if (i == 100) { //Notify user }
 }
 
 void AHair::RemoveSegment(AHairSegment* Segment)
@@ -469,6 +508,24 @@ void AHair::RemoveSelected()
 	Controller->TargetSegments.Empty();
 }
 
+void AHair::SetSelectedSegmentXWidth(float InVal)
+{
+	AMyPlayerController* Controller = GetController();
+	for (int i = 0; i < Controller->TargetSegments.Num(); i++)
+	{
+		Controller->TargetSegments[i]->SegmentXWidth = InVal;
+	}
+}
+
+void AHair::SetSelectedQuality(float InVal)
+{
+	AMyPlayerController* Controller = GetController();
+	for (int i = 0; i < Controller->TargetSegments.Num(); i++)
+	{
+		Controller->TargetSegments[i]->NumSegments = InVal;
+	}
+}
+
 //// LAYER ////
 
 void AHair::SelectLayer(AHairLayer* Layer, bool IsAppend)
@@ -485,24 +542,10 @@ void AHair::SelectLayer(AHairLayer* Layer, bool IsAppend)
 	}
 }
 
-void AHair::DeselectSegment(AHairSegment* Segment)
-{
-	AMyPlayerController* Controller = GetController();
-	if (!Controller) return;
-	Segment->OutlineMesh->SetRenderCustomDepth(false);
-	Controller->TargetSegments.Remove(Segment);
-}
-
 void AHair::DeselectAll()
 {
-	AMyPlayerController* Controller = GetController();
-	if (!Controller) return;
-
-	for (int i = 0; i < Controller->TargetSegments.Num(); i++)
-	{
-		DeselectSegment(Controller->TargetSegments[i]);
-	}
-	Controller->TargetSegments.Empty();
+	DeselectAllSegments();
+	DeselectAllNodes();
 }
 
 void AHair::RemoveLayer(AHairLayer* Layer)

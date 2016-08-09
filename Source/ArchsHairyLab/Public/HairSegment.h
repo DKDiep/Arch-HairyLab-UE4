@@ -60,6 +60,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Spline Methods")
 	void AddSplinePoint(FVector Location);
 
+	UFUNCTION(BlueprintCallable, Category = "Spline Methods")
+	void SetSplinePoint(int i, FVector Location);
+
 	UFUNCTION(BlueprintCallable, Category = "Segment Methods")
 	void SetSegmentMaterial(int Index, UMaterialInterface* InMaterial);
 };
