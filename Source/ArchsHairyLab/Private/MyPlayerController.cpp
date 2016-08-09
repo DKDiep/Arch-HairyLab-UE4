@@ -31,14 +31,16 @@ void AMyPlayerController::OnLMB()
 
 	if (Node)
 	{
+		Hair->DeselectAllSegments();
 		if (!IsShiftDown)
 		{
 			Hair->DeselectAllNodes();
 		}
 		Hair->SelectNode(Node);
 	}
-	if (Segment)
+	else if (Segment)
 	{
+		Hair->DeselectAllNodes();
 		if (!IsShiftDown)
 		{
 			Hair->DeselectAll();
