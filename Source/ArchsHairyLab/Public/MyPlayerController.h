@@ -38,10 +38,16 @@ public:
 	bool IsRotate = false;
 
 	UPROPERTY(BlueprintReadWrite)
-	bool IsDrag = false;
+	bool IsLMB = false;
+
+	UPROPERTY(BlueprintReadWrite)
+	bool IsRMB = false;
 
 	UPROPERTY(BlueprintReadWrite)
 	bool IsShiftDown = false;
+
+	UPROPERTY(BlueprintReadWrite)
+	bool IsCtrlDown = false;
 
 	UPROPERTY(BlueprintReadWrite)
 	bool IsAltDown = false;
