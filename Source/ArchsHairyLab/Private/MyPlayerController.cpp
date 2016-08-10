@@ -86,7 +86,7 @@ void AMyPlayerController::DragNode()
 	{
 		for (int i = 0; i < TargetNodes.Num(); i++)
 		{
-			APawn* Camera = GetControlledPawn();
+			APawn* Camera = GetPawn();
 			FVector ForwardOffset = MouseSpeed*MouseWheel*Camera->GetActorForwardVector();
 			FVector RightOffset = MouseSpeed*MouseX*Camera->GetActorRightVector();
 			FVector UpOffset = MouseSpeed*MouseY*Camera->GetActorUpVector();
