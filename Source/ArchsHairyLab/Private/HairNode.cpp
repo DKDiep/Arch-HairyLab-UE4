@@ -14,6 +14,7 @@ AHairNode::AHairNode()
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> TmpMesh(TEXT("StaticMesh'/Engine/EngineMeshes/Sphere.Sphere'"));
 	if (TmpMesh.Succeeded())
 		StaticMesh->SetStaticMesh(TmpMesh.Object);
+	StaticMesh->SetCastShadow(false);
 
 	static ConstructorHelpers::FObjectFinder<UMaterialInterface> TmpMat(TEXT("MaterialInterface'/Game/Meshes/defaultMat.defaultMat'"));
 	if (TmpMat.Succeeded())
