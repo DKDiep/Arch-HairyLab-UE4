@@ -628,14 +628,9 @@ void AHair::SetLayerLock(AHairLayer* Layer, bool IsLocked)
 	for (int i = 0; i < Layer->Segments.Num(); i++)
 	{
 		AHairSegment* Segment = Layer->Segments[i];
-		// Remove from selection
+		// Remove from selection, nodes will be disabled
 		DeselectSegment(Layer->Segments[i]);
 		Segment->SetActorEnableCollision(!IsLocked);
-		// Disable nodes
-		for (int j = 0; j < Segment->Nodes.Num(); j++)
-		{
-			Segment->Nodes[j]->SetActorEnableCollision(!IsLocked);
-		}
 	}
 }
 
