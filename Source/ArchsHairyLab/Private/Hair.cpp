@@ -601,11 +601,16 @@ void AHair::RemoveLayer(AHairLayer* Layer)
 
 void AHair::LayerLock(AHairLayer* Layer)
 {
-	if (!Layer->IsLocked)
+	for (int i = 0; i < Layer->Segments.Num(); i++)
 	{
-		for (int i = 0; i < Layer->Segments.Num(); i++)
+		AHairSegment* Segment = Layer->Segments[i];
+		// Remove from selection
+		DeselectSegment(Layer->Segments[i]);
+		Segment->SetActorEnableCollision(Layer->IsLocked);
+		// Disable nodes
+		for (int j = 0; j < Segment->Nodes.Num(); j++)
 		{
-			DeselectSegment(Layer->Segments[i]);
+			Segment->Nodes[j]->SetActorEnableCollision(Layer->IsLocked);
 		}
 	}
 
@@ -629,6 +634,11 @@ void AHair::LayerVisibility(AHairLayer* Layer)
 	}
 
 	Layer->IsVisible = !Layer->IsVisible;
+
+	if (!Layer->IsVisible && !Layer->IsLocked) // Lock when invisible if layer is not locked
+		LayerLock(Layer);
+	if (Layer->IsVisible && !Layer->IsLocked) // Unlock when visible if layer is not locked
+		LayerLock(Layer);
 }
 
 

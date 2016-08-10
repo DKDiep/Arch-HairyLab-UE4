@@ -14,17 +14,6 @@ AMyPlayerController::AMyPlayerController(const FObjectInitializer& ObjectInitial
 
 void AMyPlayerController::OnLMB()
 {
-	/*
-	if click hair
-		left click drag to move hair
-		right click drag to rotate hair
-	else if click node
-		left click drag to rotate node
-		right click drag to rotate node
-	else
-		deselect all
-	*/
-
 	GetHitResultUnderCursorByChannel(UEngineTypes::ConvertToTraceType(ECC_Camera), true, HitResult);
 	AHairSegment* Segment = Cast<AHairSegment>(HitResult.GetActor());
 	AHairNode* Node = Cast<AHairNode>(HitResult.GetActor());

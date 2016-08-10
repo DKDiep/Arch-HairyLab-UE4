@@ -15,6 +15,7 @@ AHairSegment::AHairSegment()
 	ProceduralMeshData = NewObject<UProceduralMeshData>();
 	ProceduralMesh = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("GeneratedMesh"));
 	RootComponent = ProceduralMesh;
+	ProceduralMesh->SetCollisionProfileName(TEXT("OverlapAll"));
 
 	OutlineMesh = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("OutlineMesh"));
 	static ConstructorHelpers::FObjectFinder<UMaterialInterface> BasicMat(TEXT("MaterialInterface'/Game/Materials/M_Basic.M_Basic'"));
