@@ -237,7 +237,11 @@ void AHair::UpdateSegment(AHairSegment* InSegment)
 		float NextDistance = (TotalDistance / InSegment->NumSegments)*i+1;
 		AssignPositions(InSegment->Spline->GetLocationAtDistanceAlongSpline(Distance, ESplineCoordinateSpace::Local),
 			InSegment->Spline->GetLocationAtDistanceAlongSpline(NextDistance, ESplineCoordinateSpace::Local));
-		Weight = 1.0f - Distance / TotalDistance;
+
+		//Weight = 1.0f - Distance / TotalDistance;
+		
+		float Displacement = InSegment->FallOff - 1.0f;
+		Weight = 1.0f + (Distance / TotalDistance)*Displacement;
 
 		// Interpolate distance to closest spline point index
 		float Delta = ((InSegment->Spline->GetNumberOfSplinePoints() - 1)*1.0f) / (InSegment->NumSegments*1.0f);
@@ -549,6 +553,15 @@ void AHair::SetSelectedSegmentXWidth(float InVal)
 	for (int i = 0; i < Controller->TargetSegments.Num(); i++)
 	{
 		Controller->TargetSegments[i]->SegmentXWidth = InVal;
+	}
+}
+
+void AHair::SetSelectedSegmentFallOff(float InVal)
+{
+	AMyPlayerController* Controller = GetController();
+	for (int i = 0; i < Controller->TargetSegments.Num(); i++)
+	{
+		Controller->TargetSegments[i]->FallOff = InVal;
 	}
 }
 

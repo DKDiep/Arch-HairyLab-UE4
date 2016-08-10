@@ -22,6 +22,10 @@ public:
 	int NumSegments = 6;
 
 	UPROPERTY(BlueprintReadWrite)
+	float FallOff = 0.0f;
+
+
+	UPROPERTY(BlueprintReadWrite)
 	class AHairLayer* HairLayer;
 
 	// Procedural Mesh Generation

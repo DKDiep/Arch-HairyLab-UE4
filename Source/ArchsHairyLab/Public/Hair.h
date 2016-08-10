@@ -136,6 +136,9 @@ public:
 	void SetSelectedSegmentXWidth(float InVal);
 
 	UFUNCTION(BlueprintCallable, Category = "Selection")
+	void SetSelectedSegmentFallOff(float InVal);
+
+	UFUNCTION(BlueprintCallable, Category = "Selection")
 	void SetSelectedQuality(float InVal);
 
 	UFUNCTION(BlueprintCallable, Category = "Selection")
