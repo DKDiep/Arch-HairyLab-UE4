@@ -471,6 +471,14 @@ void AHair::DeselectAllNodes()
 	//if (i == 100) { //Notify user }
 }
 
+void AHair::SetNodeVisibility(AHairSegment* Segment, bool IsVisible)
+{
+	for (int i = 0; i < Segment->Nodes.Num(); i++)
+	{
+		Segment->Nodes[i]->SetActorHiddenInGame(!IsVisible);
+		Segment->Nodes[i]->SetActorEnableCollision(IsVisible);
+	}
+}
 
 //// SEGMENT ////
 
@@ -481,6 +489,7 @@ void AHair::SelectSegment(AHairSegment* Segment)
 
 	Controller->TargetSegments.Add(Segment);
 	Segment->OutlineMesh->SetRenderCustomDepth(true);
+	SetNodeVisibility(Segment, true);
 }
 
 void AHair::DeselectSegment(AHairSegment* Segment)
@@ -489,6 +498,7 @@ void AHair::DeselectSegment(AHairSegment* Segment)
 	if (!Controller) return;
 	Segment->OutlineMesh->SetRenderCustomDepth(false);
 	Controller->TargetSegments.Remove(Segment);
+	SetNodeVisibility(Segment, false);
 }
 
 void AHair::DeselectAllSegments()

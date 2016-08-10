@@ -19,7 +19,7 @@ public:
 	float SegmentYWidth = 0.0f;
 
 	UPROPERTY(BlueprintReadWrite)
-	int NumSegments = 4;
+	int NumSegments = 6;
 
 	UPROPERTY(BlueprintReadWrite)
 	class AHairLayer* HairLayer;
@@ -50,6 +50,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Segment Variables")
 	UMaterialInterface* Material;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Segment Variables")
+	bool IsNodeVisible;
 
 	// Sets default values for this actor's properties
 	AHairSegment();

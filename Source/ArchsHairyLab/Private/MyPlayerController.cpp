@@ -20,7 +20,7 @@ void AMyPlayerController::OnLMB()
 
 	if (Node)
 	{
-		Hair->DeselectAllSegments();
+		//Hair->DeselectAllSegments();
 		if (!IsShiftDown)
 		{
 			Hair->DeselectAllNodes();
@@ -29,7 +29,7 @@ void AMyPlayerController::OnLMB()
 	}
 	else if (Segment)
 	{
-		Hair->DeselectAllNodes();
+		//Hair->DeselectAllNodes();
 		if (!IsShiftDown)
 		{
 			Hair->DeselectAll();

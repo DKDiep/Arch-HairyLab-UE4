@@ -127,6 +127,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Selection")
 	void DeselectAllNodes();
 
+	UFUNCTION(BlueprintCallable, Category = "Selection")
+	void SetNodeVisibility(AHairSegment* Segment, bool IsVisible);
+
 	//// SEGMENT ////
 
 	UFUNCTION(BlueprintCallable, Category = "Selection")
