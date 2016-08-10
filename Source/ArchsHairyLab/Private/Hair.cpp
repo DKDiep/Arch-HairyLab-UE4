@@ -622,8 +622,6 @@ void AHair::SetLayerVisibility(AHairLayer* Layer, bool IsVisible)
 	for (int i = 0; i < Layer->Segments.Num(); i++)
 	{
 		AHairSegment* Segment = Layer->Segments[i];
-		// Remove from selection
-		DeselectSegment(Layer->Segments[i]);
 		Segment->SetActorHiddenInGame(IsVisible);
 		// Hide nodes
 		for (int j = 0; j < Segment->Nodes.Num(); j++)
@@ -632,7 +630,7 @@ void AHair::SetLayerVisibility(AHairLayer* Layer, bool IsVisible)
 		}
 	}
 
-	if (IsVisible)
+	if (!IsVisible)
 		SetLayerLock(Layer, true);
 }
 
