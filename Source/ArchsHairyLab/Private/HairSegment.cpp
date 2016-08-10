@@ -41,7 +41,7 @@ void AHairSegment::AddSplinePoint(FVector Location)
 
 void AHairSegment::SetSplinePoint(int i, FVector Location)
 {
-	if (i < 1 || i > Spline->GetNumberOfSplinePoints()) return;
+	if (i < 0 || i > Spline->GetNumberOfSplinePoints()) return;
 	Spline->SetLocationAtSplinePoint(i, Location, ESplineCoordinateSpace::World);
 }
 

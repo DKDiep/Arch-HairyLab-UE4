@@ -123,7 +123,7 @@ AHairSegment* AHair::SpawnSegment()
 	// Set IsExtending
 	Controller->IsExtending = true;
 
-	SpawnNode(Controller, World, Controller->HitResult.Location);
+	SpawnNode(Controller, World, Loc);
 	UpdateSegment(Controller->TargetSegments[0]);
 
 	// Add hair segment to current layer
@@ -180,6 +180,28 @@ AHairNode* AHair::SpawnNode(AMyPlayerController* Controller, UWorld* World, FVec
 		}
 	}
 	return Node;
+}
+
+void AHair::SetNodeLocation(AHairNode* Node, FVector Location, bool IsPropToChildren)
+{
+	AHairSegment* Segment = Node->Segment;
+	if (IsPropToChildren)
+	{
+
+		FVector Offset = Location - Node->GetActorLocation();
+		for (int i = Node->Index; i < Segment->Nodes.Num(); i++)
+		{
+			Segment->Nodes[i]->AddActorWorldOffset(Offset);
+			Segment->SetSplinePoint(i, Segment->Nodes[i]->GetActorLocation());
+		}
+	}
+	else
+	{
+		Node->SetActorLocation(Location);
+		Segment->SetSplinePoint(Node->Index, Node->GetActorLocation());
+	}
+
+	UpdateSegment(Segment);
 }
 
 void AHair::UpdateHair()

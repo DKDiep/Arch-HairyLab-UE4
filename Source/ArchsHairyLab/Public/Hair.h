@@ -90,6 +90,9 @@ public:
 	AHairNode* SpawnNode(AMyPlayerController* Controller, UWorld* World, FVector Location);
 
 	UFUNCTION(BlueprintCallable, Category = "Procedural Mesh Generation")
+	void SetNodeLocation(AHairNode* Node, FVector Location, bool IsPropToChildren);
+
+	UFUNCTION(BlueprintCallable, Category = "Procedural Mesh Generation")
 	void UpdateHair();
 	UFUNCTION(BlueprintCallable, Category = "Procedural Mesh Generation")
 	void UpdateLayer(class AHairLayer* InLayer);

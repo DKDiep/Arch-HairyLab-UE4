@@ -74,9 +74,8 @@ void AMyPlayerController::DragNode()
 		FVector Offset = FVector(MouseY, MouseX, MouseWheel)*MouseSpeed;
 		for (int i = 0; i < TargetNodes.Num(); i++)
 		{
-			TargetNodes[i]->AddActorWorldOffset(Offset);
-			TargetNodes[i]->Segment->SetSplinePoint(TargetNodes[i]->Index, TargetNodes[i]->GetActorLocation());
-			Hair->UpdateSegment(TargetNodes[i]->Segment);
+			FVector Location = TargetNodes[i]->GetActorLocation() + Offset;
+			Hair->SetNodeLocation(TargetNodes[i], Location, IsShiftDown);
 		}
 	}
 	else if (IsCtrlDown)
@@ -91,9 +90,7 @@ void AMyPlayerController::DragNode()
 		if (bHitOccurred)
 		{
 			FVector Location = Hit.Location + Hit.Normal * 25.0;
-			TargetNodes[0]->SetActorLocation(Location);
-			TargetNodes[0]->Segment->SetSplinePoint(TargetNodes[0]->Index, TargetNodes[0]->GetActorLocation());
-			Hair->UpdateSegment(TargetNodes[0]->Segment);
+			Hair->SetNodeLocation(TargetNodes[0], Location, IsShiftDown);
 		}
 	}
 	else
@@ -104,10 +101,8 @@ void AMyPlayerController::DragNode()
 			FVector ForwardOffset = MouseSpeed*MouseWheel*Camera->GetActorForwardVector();
 			FVector RightOffset = MouseSpeed*MouseX*Camera->GetActorRightVector();
 			FVector UpOffset = MouseSpeed*MouseY*Camera->GetActorUpVector();
-			FVector Offset = ForwardOffset + RightOffset + UpOffset;
-			TargetNodes[i]->AddActorWorldOffset(Offset);
-			TargetNodes[i]->Segment->SetSplinePoint(TargetNodes[i]->Index, TargetNodes[i]->GetActorLocation());
-			Hair->UpdateSegment(TargetNodes[i]->Segment);
+			FVector Location = TargetNodes[i]->GetActorLocation() + ForwardOffset + RightOffset + UpOffset;
+			Hair->SetNodeLocation(TargetNodes[i], Location, IsShiftDown);
 		}
 	}
 }
