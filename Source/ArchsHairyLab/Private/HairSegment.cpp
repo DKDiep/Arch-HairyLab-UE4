@@ -22,6 +22,7 @@ AHairSegment::AHairSegment()
 	if (BasicMat.Succeeded())
 		OutlineMesh->SetMaterial(0, BasicMat.Object);
 	OutlineMesh->SetRenderInMainPass(false);
+	OutlineMesh->SetCastShadow(false);
 
 	Spline = CreateDefaultSubobject<USplineComponent>(TEXT("Spline"));
 	Spline->SetupAttachment(RootComponent);

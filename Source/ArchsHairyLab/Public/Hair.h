@@ -163,10 +163,10 @@ public:
 	void RemoveLayer(AHairLayer* Layer);
 
 	UFUNCTION(BlueprintCallable, Category = "Selection")
-	void LayerLock(AHairLayer* Layer);
+	void SetLayerLock(AHairLayer* Layer, bool IsLocked);
 
 	UFUNCTION(BlueprintCallable, Category = "Selection")
-	void LayerVisibility(AHairLayer* Layer);
+	void SetLayerVisibility(AHairLayer* Layer, bool IssVisible);
 
 
 	//// FILE MANAGEMENT ////

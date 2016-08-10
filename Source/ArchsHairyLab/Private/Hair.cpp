@@ -599,46 +599,41 @@ void AHair::RemoveLayer(AHairLayer* Layer)
 	}	
 }
 
-void AHair::LayerLock(AHairLayer* Layer)
+void AHair::SetLayerLock(AHairLayer* Layer, bool IsLocked)
 {
+	Layer->IsLocked = IsLocked;
 	for (int i = 0; i < Layer->Segments.Num(); i++)
 	{
 		AHairSegment* Segment = Layer->Segments[i];
 		// Remove from selection
 		DeselectSegment(Layer->Segments[i]);
-		Segment->SetActorEnableCollision(Layer->IsLocked);
+		Segment->SetActorEnableCollision(!IsLocked);
 		// Disable nodes
 		for (int j = 0; j < Segment->Nodes.Num(); j++)
 		{
-			Segment->Nodes[j]->SetActorEnableCollision(Layer->IsLocked);
+			Segment->Nodes[j]->SetActorEnableCollision(!IsLocked);
 		}
 	}
-
-	Layer->IsLocked = !Layer->IsLocked;
-	UE_LOG(LogTemp, Warning, TEXT("layer %d"), Layer->	IsLocked);
 }
 
-void AHair::LayerVisibility(AHairLayer* Layer)
+void AHair::SetLayerVisibility(AHairLayer* Layer, bool IsVisible)
 {
+	Layer->IsVisible = IsVisible;
 	for (int i = 0; i < Layer->Segments.Num(); i++)
 	{
 		AHairSegment* Segment = Layer->Segments[i];
 		// Remove from selection
 		DeselectSegment(Layer->Segments[i]);
-		Segment->SetActorHiddenInGame(Layer->IsVisible);
+		Segment->SetActorHiddenInGame(IsVisible);
 		// Hide nodes
 		for (int j = 0; j < Segment->Nodes.Num(); j++)
 		{
-			Segment->Nodes[j]->SetActorHiddenInGame(Layer->IsVisible);
+			Segment->Nodes[j]->SetActorHiddenInGame(IsVisible);
 		}
 	}
 
-	Layer->IsVisible = !Layer->IsVisible;
-
-	if (!Layer->IsVisible && !Layer->IsLocked) // Lock when invisible if layer is not locked
-		LayerLock(Layer);
-	if (Layer->IsVisible && !Layer->IsLocked) // Unlock when visible if layer is not locked
-		LayerLock(Layer);
+	if (IsVisible)
+		SetLayerLock(Layer, true);
 }
 
 
