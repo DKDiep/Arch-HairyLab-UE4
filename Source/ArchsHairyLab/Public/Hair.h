@@ -93,6 +93,9 @@ public:
 	void SetNodeLocation(AHairNode* Node, FVector Location, bool IsPropToChildren);
 
 	UFUNCTION(BlueprintCallable, Category = "Procedural Mesh Generation")
+	void SetNodeRotation(AHairNode* Node, FRotator Rotation, bool IsPropToChildren);
+
+	UFUNCTION(BlueprintCallable, Category = "Procedural Mesh Generation")
 	void UpdateHair();
 	UFUNCTION(BlueprintCallable, Category = "Procedural Mesh Generation")
 	void UpdateLayer(class AHairLayer* InLayer);
@@ -104,7 +107,7 @@ public:
 	void ClearMeshData(AHairSegment* InSegment);
 
 	UFUNCTION(BlueprintCallable, Category = "Procedural Mesh Methods")
-		FVector MapVertex(FVector V, AHairSegment* Segment, float Distance, float InWeight);
+	FVector MapVertex(FVector V, AHairSegment* Segment, float Distance, float InWeight);
 
 	UFUNCTION(BlueprintCallable, Category = "Procedural Mesh Methods")
 	void AddVertices(int FirstIndex, TArray<FVector> InVertices, AHairSegment* InSegment, float Distance);

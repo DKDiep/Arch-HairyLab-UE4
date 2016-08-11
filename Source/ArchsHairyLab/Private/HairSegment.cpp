@@ -47,7 +47,6 @@ void AHairSegment::SetSplinePoint(int i, FVector Location)
 	Spline->SetLocationAtSplinePoint(i, Location, ESplineCoordinateSpace::World);
 }
 
-
 void AHairSegment::SetSegmentMaterial(int Index, UMaterialInterface* InMaterial)
 {
 	if (InMaterial)

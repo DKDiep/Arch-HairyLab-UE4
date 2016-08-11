@@ -208,6 +208,19 @@ void AHair::SetNodeLocation(AHairNode* Node, FVector Location, bool IsPropToChil
 	UpdateSegment(Segment);
 }
 
+void AHair::SetNodeRotation(AHairNode* Node, FRotator Rotation, bool IsPropToChildren)
+{
+	AHairSegment* Segment = Node->Segment;
+	USplineComponent* Spline = Segment->Spline;
+
+	FVector Up = Spline->GetUpVectorAtSplinePoint(Node->Index, ESplineCoordinateSpace::World);
+	FVector UpRotated = Rotation.RotateVector(Up);
+	Spline->SetUpVectorAtSplinePoint(Node->Index, UpRotated, ESplineCoordinateSpace::World);
+
+	Node->SetActorRotation(Spline->GetRotationAtSplinePoint(Node->Index, ESplineCoordinateSpace::World));
+	UpdateSegment(Segment);
+}
+
 void AHair::UpdateHair()
 {
 	for (int i = 0; i < HairLayers.Num(); i++)

@@ -15,6 +15,7 @@ AHairNode::AHairNode()
 	if (TmpMesh.Succeeded())
 		StaticMesh->SetStaticMesh(TmpMesh.Object);
 	StaticMesh->SetCastShadow(false);
+	StaticMesh->SetCollisionProfileName(TEXT("BlockAllDynamic"));
 
 	static ConstructorHelpers::FObjectFinder<UMaterialInterface> TmpMat(TEXT("MaterialInterface'/Game/Meshes/defaultMat.defaultMat'"));
 	if (TmpMat.Succeeded())

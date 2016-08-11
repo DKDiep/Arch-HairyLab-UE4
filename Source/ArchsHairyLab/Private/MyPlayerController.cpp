@@ -7,6 +7,8 @@
 #include "HairSegment.h"
 #include "HairLayer.h"
 #include "Hair.h"
+#include "Runtime/Engine/Classes/Kismet/KismetMathLibrary.h"
+#include "Runtime/Engine/Classes/Components/SplineComponent.h"
 
 AMyPlayerController::AMyPlayerController(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -58,16 +60,8 @@ void AMyPlayerController::OnLMB()
 void AMyPlayerController::DragNode()
 {
 	if (TargetNodes.Num() == 0) return;
-	if (IsAltDown)
-	{
-		FVector Offset = FVector(MouseX, -MouseWheel, MouseY)*MouseSpeed;
-		for (int i = 0; i < TargetNodes.Num(); i++)
-		{
-			FVector Location = TargetNodes[i]->GetActorLocation() + Offset;
-			Hair->SetNodeLocation(TargetNodes[i], Location, IsShiftDown);
-		}
-	}
-	else if (IsCtrlDown)
+
+	if (IsCtrlDown)
 	{
 		// Hit object array
 		TArray< TEnumAsByte< EObjectTypeQuery > > ObjectTypes;
@@ -80,6 +74,14 @@ void AMyPlayerController::DragNode()
 		{
 			FVector Location = Hit.Location + Hit.Normal * 25.0;
 			Hair->SetNodeLocation(TargetNodes[0], Location, IsShiftDown);
+		}
+	}
+	else if (IsAltDown)
+	{
+		for (int i = 0; i < TargetNodes.Num(); i++)
+		{
+			FRotator Rot = FRotator(0.0f, MouseWheel*MouseSpeed*2.0f, 0.0f);
+			Hair->SetNodeRotation(TargetNodes[i], Rot, false);
 		}
 	}
 	else
