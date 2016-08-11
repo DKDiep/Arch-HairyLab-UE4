@@ -193,14 +193,17 @@ void AHair::SetNodeLocation(AHairNode* Node, FVector Location, bool IsPropToChil
 		{
 			Segment->Nodes[i]->AddActorWorldOffset(Offset);
 			Segment->SetSplinePoint(i, Segment->Nodes[i]->GetActorLocation());
+			FRotator Rot = Segment->Spline->FindRotationClosestToWorldLocation(Segment->Nodes[i]->GetActorLocation(), ESplineCoordinateSpace::World);
+			Segment->Nodes[i]->SetActorRotation(Rot);
 		}
 	}
 	else
 	{
 		Node->SetActorLocation(Location);
 		Segment->SetSplinePoint(Node->Index, Node->GetActorLocation());
+		FRotator Rot = Segment->Spline->FindRotationClosestToWorldLocation(Location, ESplineCoordinateSpace::World);
+		Node->SetActorRotation(Rot);
 	}
-
 	UpdateSegment(Segment);
 }
 
