@@ -179,6 +179,12 @@ AHairNode* AHair::SpawnNode(AMyPlayerController* Controller, UWorld* World, FVec
 			Node->Index = Controller->TargetSegments[0]->Nodes.Num()-1;
 		}
 	}
+	// Correct node 0 due to no rotation for first point
+	if (Node->Index == 1)
+	{
+		FRotator FixRot = Node->Segment->Spline->FindRotationClosestToWorldLocation(Node->Segment->Nodes[0]->GetActorLocation(), ESplineCoordinateSpace::World);
+		Node->Segment->Nodes[0]->SetActorRotation(FixRot);
+	}
 	return Node;
 }
 
