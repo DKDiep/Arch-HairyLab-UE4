@@ -60,7 +60,7 @@ void AMyPlayerController::DragNode()
 	if (TargetNodes.Num() == 0) return;
 	if (IsAltDown)
 	{
-		FVector Offset = FVector(MouseY, MouseX, MouseWheel)*MouseSpeed;
+		FVector Offset = FVector(MouseWheel, MouseY, MouseX)*MouseSpeed;
 		for (int i = 0; i < TargetNodes.Num(); i++)
 		{
 			FVector Location = TargetNodes[i]->GetActorLocation() + Offset;
@@ -87,8 +87,8 @@ void AMyPlayerController::DragNode()
 		for (int i = 0; i < TargetNodes.Num(); i++)
 		{
 			APawn* Camera = GetPawn();
-			FVector ForwardOffset = MouseSpeed*MouseWheel*Camera->GetActorForwardVector();
-			FVector RightOffset = MouseSpeed*MouseX*Camera->GetActorRightVector();
+			FVector ForwardOffset = MouseSpeed*-MouseX*Camera->GetActorForwardVector();
+			FVector RightOffset = MouseSpeed*MouseWheel*Camera->GetActorRightVector();
 			FVector UpOffset = MouseSpeed*MouseY*Camera->GetActorUpVector();
 			FVector Location = TargetNodes[i]->GetActorLocation() + ForwardOffset + RightOffset + UpOffset;
 			Hair->SetNodeLocation(TargetNodes[i], Location, IsShiftDown);

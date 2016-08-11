@@ -15,6 +15,7 @@
 #include "Runtime/Core/Public/HAL/PlatformFilemanager.h"
 #include "Runtime/Engine/Classes/Components/PrimitiveComponent.h"
 #include "Runtime/Core/Public/GenericPlatform/GenericPlatformMath.h"
+#include "Runtime/Engine/Classes/Kismet/KismetMathLibrary.h"
 
 AHair::AHair()
 {
@@ -63,16 +64,17 @@ void AHair::SetupMesh()
 	StartMeshData->UVs.Add(FVector2D(0.0f, 0.0f));
 	StartMeshData->UVs.Add(FVector2D(1.0f, 0.0f));
 
-	MiddleMeshData->Vertices.Add(FVector(-25.0f, 0.0f, 50.0f));
-	MiddleMeshData->Vertices.Add(FVector(25.0f, 0.0f, 50.0f));
+	// X = Right, Y = Forward, Z = Up
+	MiddleMeshData->Vertices.Add(FVector(-25.0f, 50.0f, 0.0f));
+	MiddleMeshData->Vertices.Add(FVector(25.0f, 50.0f, 0.0f));
 	MiddleMeshData->Vertices.Add(FVector(-25.0f, 0.0f, 0.0f));
 	MiddleMeshData->Vertices.Add(FVector(25.0f, 0.0f, 0.0f));
+	MiddleMeshData->Triangles.Add(2);
+	MiddleMeshData->Triangles.Add(1);
 	MiddleMeshData->Triangles.Add(0);
 	MiddleMeshData->Triangles.Add(1);
 	MiddleMeshData->Triangles.Add(2);
 	MiddleMeshData->Triangles.Add(3);
-	MiddleMeshData->Triangles.Add(2);
-	MiddleMeshData->Triangles.Add(1);
 	MiddleMeshData->UVs.Add(FVector2D(0.0f, 1.0f));
 	MiddleMeshData->UVs.Add(FVector2D(1.0f, 1.0f));
 	MiddleMeshData->UVs.Add(FVector2D(0.0f, 0.0f));
@@ -257,13 +259,13 @@ void AHair::UpdateSegment(AHairSegment* InSegment)
 		int Index = FGenericPlatformMath::RoundToInt(i*Delta);
 		if (i == 0)
 		{
-			AddVertices(0, MiddleMeshData->Vertices, InSegment, Index);
+			AddVertices(0, MiddleMeshData->Vertices, InSegment, Distance);
 			AddTriangles(InSegment);
 			AddUVs(InSegment, true);
 		}
 		else
 		{
-			AddVertices(2, MiddleMeshData->Vertices, InSegment, Index);
+			AddVertices(2, MiddleMeshData->Vertices, InSegment, Distance);
 			AddTriangles(InSegment);
 			AddUVs(InSegment, false);
 		}
@@ -294,15 +296,15 @@ void AHair::CalculateEndPoints(TArray<FVector> InVertices)
 	for (int i = 0; i < InVertices.Num(); i++)
 	{
 		// Length
-		if (InVertices[i].Z > maxLength)
+		if (InVertices[i].Y > maxLength)
 		{
-			maxLength = InVertices[i].Z;
-			AnchorLengthStart = FVector(0.0f, 0.0f, InVertices[i].Z);
+			maxLength = InVertices[i].Y;
+			AnchorLengthStart = FVector(0.0f, 0.0f, InVertices[i].Y);
 		}
-		if (InVertices[i].Z < minLength)
+		if (InVertices[i].Y < minLength)
 		{
-			minLength = InVertices[i].Z;
-			AnchorLengthEnd = FVector(0.0f, 0.0f, InVertices[i].Z);
+			minLength = InVertices[i].Y;
+			AnchorLengthEnd = FVector(0.0f, 0.0f, InVertices[i].Y);
 		}
 		// Width
 		if (InVertices[i].X > maxWidth)
@@ -316,25 +318,25 @@ void AHair::CalculateEndPoints(TArray<FVector> InVertices)
 			AnchorWidthEnd = FVector(InVertices[i].X, 0.0f, 0.0f);
 		}
 		// Thickness
-		if (InVertices[i].Y > maxThickness)
+		if (InVertices[i].Z > maxThickness)
 		{
-			maxThickness = InVertices[i].Y;
-			AnchorThicknessStart = FVector(0.0f, InVertices[i].Y, 0.0f);
+			maxThickness = InVertices[i].Z;
+			AnchorThicknessStart = FVector(0.0f, InVertices[i].Z, 0.0f);
 		}
-		if (InVertices[i].Y < minThickness)
+		if (InVertices[i].Z < minThickness)
 		{
-			minThickness = InVertices[i].Y;
-			AnchorThicknessEnd = FVector(0.0f, InVertices[i].Y, 0.0f);
+			minThickness = InVertices[i].Z;
+			AnchorThicknessEnd = FVector(0.0f, InVertices[i].Z, 0.0f);
 		}
 	}
 	// Get all points that lie on ends
 	for (int i = 0; i < InVertices.Num(); i++)
 	{
-		if (InVertices[i].Z == maxLength)
+		if (InVertices[i].Y == maxLength)
 		{
 			EndPointsA.Add(InVertices[i]);
 		}
-		if (InVertices[i].Z == minLength)
+		if (InVertices[i].Y == minLength)
 		{
 			EndPointsB.Add(InVertices[i]);
 		}
@@ -356,7 +358,19 @@ void AHair::AssignPositions(FVector InP1, FVector InP2)
 	P2 = InP2;
 }
 
-FVector AHair::MapVertex(FVector V, FVector Direction, FVector Normal, AHairSegment* Segment, float InWeight)
+void AHair::AddVertices(int FirstIndex, TArray<FVector> InVertices, AHairSegment* InSegment, float Distance)
+{
+	// Get player controllers
+	AMyPlayerController* Controller = GetController();
+	if (!Controller || !InSegment) return;
+
+	for (int j = FirstIndex; j <= MiddleMeshData->Vertices.Num() - 1; j++)
+	{
+		InSegment->ProceduralMeshData->Vertices.Add(MapVertex(InVertices[j], InSegment, Distance, Weight));
+	}
+}
+
+FVector AHair::MapVertex(FVector V, AHairSegment* Segment, float Distance, float InWeight)
 {
 	if (!Segment)
 	{
@@ -364,55 +378,39 @@ FVector AHair::MapVertex(FVector V, FVector Direction, FVector Normal, AHairSegm
 		return FVector(0, 0, 0);
 	}
 
-	// Find percentage distance between A to B
-	float VDistance = AnchorLengthStart.Z - V.Z;
-	float Distance = FVector::Dist(AnchorLengthStart, AnchorLengthEnd);
-	float VRatio = VDistance / Distance;
+	FVector Forward = Segment->Spline->GetDirectionAtDistanceAlongSpline(Distance, ESplineCoordinateSpace::Local);
+	FVector Up = Segment->Spline->GetUpVectorAtDistanceAlongSpline(Distance, ESplineCoordinateSpace::Local);
+	FVector Right = Segment->Spline->GetRightVectorAtDistanceAlongSpline(Distance, ESplineCoordinateSpace::Local);
+
+	// Find local percentage distance between A to B
+	float VDistance = AnchorLengthStart.Y - V.Y;
+	float LocalDistance = FVector::Dist(AnchorLengthStart, AnchorLengthEnd);
+	float VRatio = VDistance / LocalDistance;
 	// Get displacement vector from P1 to P2
 	FVector P3 = P2 - P1;
 	// From P1, add weighted displacement vector for vertical offset
 	FVector V2 = P1 + VRatio*P3;
 
-	// Get X direction
-	FVector DirX = FVector::CrossProduct(Direction, Normal);
-	// Get X ratio
-	float XDistance = AnchorWidthStart.X - V.X;
-	float XDisplacement = FVector::Dist(AnchorWidthStart, AnchorWidthEnd);
-	float XRatio = 0.0f;
-	if (XDisplacement == 0.0f)
-		XRatio = 0.0f;
+	// Get right ratio
+	float RDistance = AnchorWidthStart.X - V.X;
+	float RDisplacement = FVector::Dist(AnchorWidthStart, AnchorWidthEnd);
+	float RRatio = 0.0f;
+	if (RDisplacement == 0.0f)
+		RRatio = 0.0f;
 	else
-		XRatio = -0.5f + XDistance / XDisplacement;
-	// Apply X direction
-	float TotalWidth = GlobalXWidth +Segment->SegmentXWidth;
-	V2 = V2 + (DirX*TotalWidth*XRatio*InWeight);
-	//V2 = V2 + (DirX*V.X*InWeight);
+		RRatio = -0.5f + RDistance / RDisplacement;
+	// Apply right direction
+	float TotalWidth = GlobalXWidth + Segment->SegmentXWidth;
+	V2 = V2 + (Right*TotalWidth*RRatio*InWeight);
 
-	// Find percentage distance of Y
-	float YDistance = AnchorThicknessStart.Y - V.Y;
-	float YDisplacement = FVector::Dist(AnchorThicknessStart, AnchorThicknessEnd);
-	float YRatio = YDistance / YDisplacement;
-	// Get Y direction
-	FVector DirY = DirX.RotateAngleAxis(90, FVector(0, 0, 1));
+	// Find percentage distance of up
+	float UDistance = AnchorThicknessStart.Z - V.Z;
+	float UDisplacement = FVector::Dist(AnchorThicknessStart, AnchorThicknessEnd);
+	float URatio = UDistance / UDisplacement;
 	// Apply Y direction
-	V2 = V2 + (DirY*V.Y*InWeight);
+	V2 = V2 + (Up*V.Z*InWeight);
 
-	//return V;
 	return V2;
-}
-
-void AHair::AddVertices(int FirstIndex, TArray<FVector> InVertices, AHairSegment* InSegment, int i)
-{
-	// Get player controllers
-	AMyPlayerController* Controller = GetController();
-	if (!Controller || !InSegment) return;
-
-	FVector Direction = InSegment->Spline->GetDirectionAtSplinePoint(i, ESplineCoordinateSpace::Local);
-	FVector Normal = InSegment->Normals[i];
-	for (int j = FirstIndex; j <= MiddleMeshData->Vertices.Num() - 1; j++)
-	{
-		InSegment->ProceduralMeshData->Vertices.Add(MapVertex(InVertices[j], Direction, Normal, InSegment, Weight));
-	}
 }
 
 void AHair::AddTriangles(AHairSegment* InSegment)

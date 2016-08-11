@@ -104,10 +104,10 @@ public:
 	void ClearMeshData(AHairSegment* InSegment);
 
 	UFUNCTION(BlueprintCallable, Category = "Procedural Mesh Methods")
-	FVector MapVertex(FVector V, FVector Direction, FVector Normal, AHairSegment* Segment, float InWeight);
+		FVector MapVertex(FVector V, AHairSegment* Segment, float Distance, float InWeight);
 
 	UFUNCTION(BlueprintCallable, Category = "Procedural Mesh Methods")
-	void AddVertices(int FirstIndex, TArray<FVector> InVertices, AHairSegment* InSegment, int i);
+	void AddVertices(int FirstIndex, TArray<FVector> InVertices, AHairSegment* InSegment, float Distance);
 
 	UFUNCTION(BlueprintCallable, Category = "Procedural Mesh Methods")
 	void AddTriangles(AHairSegment* InSegment);
