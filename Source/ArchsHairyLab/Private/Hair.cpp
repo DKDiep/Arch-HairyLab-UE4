@@ -164,9 +164,6 @@ AHairNode* AHair::SpawnNode(AMyPlayerController* Controller, UWorld* World, FVec
 	// Spawn node object
 	FActorSpawnParameters SpawnParams;
 	FVector Dir = Controller->TargetSegments[0]->Spline->FindDirectionClosestToWorldLocation(Location, ESplineCoordinateSpace::World);
-	//FRotator Rot = FRotator::MakeFromEuler(Dir);
-	//FRotator Rot = FRotator(Dir.X, Dir.Y, Dir.Z);
-	//FRotator Rot = (Controller->HitResult.Location - (Controller->HitResult.Location + Controller->HitResult.Normal)).Rotation();
 	FRotator Rot = Controller->TargetSegments[0]->Spline->FindRotationClosestToWorldLocation(Location, ESplineCoordinateSpace::World);
 	AHairNode* Node = World->SpawnActor<AHairNode>(AHairNode::StaticClass(), Location, Rot, SpawnParams);
 	if (Node)
