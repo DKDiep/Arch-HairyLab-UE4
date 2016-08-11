@@ -60,7 +60,7 @@ void AMyPlayerController::DragNode()
 	if (TargetNodes.Num() == 0) return;
 	if (IsAltDown)
 	{
-		FVector Offset = FVector(MouseWheel, MouseY, MouseX)*MouseSpeed;
+		FVector Offset = FVector(MouseX, -MouseWheel, MouseY)*MouseSpeed;
 		for (int i = 0; i < TargetNodes.Num(); i++)
 		{
 			FVector Location = TargetNodes[i]->GetActorLocation() + Offset;
