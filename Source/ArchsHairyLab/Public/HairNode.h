@@ -13,9 +13,6 @@ class ARCHSHAIRYLAB_API AHairNode : public AActor
 public:	
 	// Sets default values for this actor's properties
 	AHairNode();
-
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
 	
 	// Called every frame
 	virtual void Tick( float DeltaSeconds ) override;

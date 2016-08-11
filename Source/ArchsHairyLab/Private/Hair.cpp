@@ -163,13 +163,12 @@ AHairNode* AHair::SpawnNode(AMyPlayerController* Controller, UWorld* World, FVec
 
 	// Spawn node object
 	FActorSpawnParameters SpawnParams;
-	AHairNode* Node = World->SpawnActor<AHairNode>(AHairNode::StaticClass(), Location, FRotator(0.0f), SpawnParams);
+	FRotator Rot = (Controller->HitResult.Location - (Controller->HitResult.Location + Controller->HitResult.Normal)).Rotation();
+	AHairNode* Node = World->SpawnActor<AHairNode>(AHairNode::StaticClass(), Location, Rot, SpawnParams);
 	if (Node)
 	{
 		// Resize node object
 		Node->SetActorScale3D(FVector(0.05f, 0.05f, 0.05f));
-		FRotator Rot = (Controller->HitResult.Location - (Controller->HitResult.Location+Controller->HitResult.Normal)).Rotation();
-		Node->SetActorRotation(Rot);
 		if (Controller->TargetSegments[0])
 		{
 			// Add node to list for segment

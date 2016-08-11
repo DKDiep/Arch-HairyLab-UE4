@@ -7,7 +7,7 @@
 // Sets default values
 AHairNode::AHairNode()
 {
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
 	RootComponent = StaticMesh;
@@ -21,16 +21,44 @@ AHairNode::AHairNode()
 		StaticMesh->SetMaterial(0, TmpMat.Object);
 }
 
-// Called when the game starts or when spawned
-void AHairNode::BeginPlay()
-{
-	Super::BeginPlay();
-	
-}
-
-// Called every frame
+// For debug
 void AHairNode::Tick( float DeltaTime )
 {
 	Super::Tick( DeltaTime );
+
+	if (bHidden) return;
+
+	DrawDebugLine(
+		GetWorld(),
+		GetActorLocation(),
+		GetActorLocation() + GetActorForwardVector()*50.0f,
+		FColor::Red,
+		false,
+		-1.0f,
+		0,
+		1.0f
+		);
+
+	DrawDebugLine(
+		GetWorld(),
+		GetActorLocation(),
+		GetActorLocation() + GetActorRightVector()*50.0f,
+		FColor::Green,
+		false,
+		-1.0f,
+		0,
+		1.0f
+		);
+
+	DrawDebugLine(
+		GetWorld(),
+		GetActorLocation(),
+		GetActorLocation() + GetActorUpVector()*50.0f,
+		FColor::Blue,
+		false,
+		-1.0f,
+		0,
+		1.0f
+		);
 }
 
