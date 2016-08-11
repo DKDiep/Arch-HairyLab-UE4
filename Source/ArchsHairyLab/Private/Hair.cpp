@@ -151,6 +151,8 @@ void AHair::ExtendSegment()
 	if (!Controller->HitResult.Actor->IsA(AHead::StaticClass())) return;
 
 	Controller->TargetSegments[0]->AddSplinePoint(Controller->HitResult.Location + Controller->HitResult.Normal*25.0f);
+	Controller->TargetSegments[0]->Spline->SetUpVectorAtSplinePoint(Controller->TargetSegments[0]->Spline->GetNumberOfSplinePoints()-1,
+																	Controller->HitResult.Normal, ESplineCoordinateSpace::World);
 	Controller->TargetSegments[0]->Normals.Add(Controller->HitResult.Normal);
 
 	SpawnNode(Controller, World, Controller->HitResult.Location + Controller->HitResult.Normal*25.0f);
@@ -163,27 +165,23 @@ AHairNode* AHair::SpawnNode(AMyPlayerController* Controller, UWorld* World, FVec
 
 	// Spawn node object
 	FActorSpawnParameters SpawnParams;
-	// Use spline closest rotation
-	FRotator Rot = Controller->TargetSegments[0]->Spline->FindRotationClosestToWorldLocation(Location, ESplineCoordinateSpace::World);
+	AHairSegment* Segment = Controller->TargetSegments[0];
+	int Index = Segment->Spline->GetNumberOfSplinePoints() - 1;
+	// Use spline direction and normal to get rotator
+	FRotator Rot = Segment->Spline->GetRotationAtSplinePoint(Index, ESplineCoordinateSpace::World);
 	AHairNode* Node = World->SpawnActor<AHairNode>(AHairNode::StaticClass(), Location, Rot, SpawnParams);
 	if (Node)
 	{
 		// Resize node object
-		Node->SetActorScale3D(FVector(0.05f, 0.05f, 0.05f));
-		if (Controller->TargetSegments[0])
+		Node->SetActorScale3D(FVector(0.04f, 0.04f, 0.04f));
+		if (Segment)
 		{
-			// Add node to list for segment
-			Controller->TargetSegments[0]->Nodes.Add(Node);
 			// Assign segment reference and index for node
-			Node->Segment = Controller->TargetSegments[0];
-			Node->Index = Controller->TargetSegments[0]->Nodes.Num()-1;
+			Node->Segment = Segment;
+			Node->Index = Index;
+			// Add node to list for segment
+			Segment->Nodes.Add(Node);
 		}
-	}
-	// Correct node 0 due to no rotation for first point
-	if (Node->Index == 1)
-	{
-		FRotator FixRot = Node->Segment->Spline->FindRotationClosestToWorldLocation(Node->Segment->Nodes[0]->GetActorLocation(), ESplineCoordinateSpace::World);
-		Node->Segment->Nodes[0]->SetActorRotation(FixRot);
 	}
 	return Node;
 }
@@ -193,22 +191,17 @@ void AHair::SetNodeLocation(AHairNode* Node, FVector Location, bool IsPropToChil
 	AHairSegment* Segment = Node->Segment;
 	if (IsPropToChildren)
 	{
-
 		FVector Offset = Location - Node->GetActorLocation();
 		for (int i = Node->Index; i < Segment->Nodes.Num(); i++)
 		{
 			Segment->Nodes[i]->AddActorWorldOffset(Offset);
 			Segment->SetSplinePoint(i, Segment->Nodes[i]->GetActorLocation());
-			FRotator Rot = Segment->Spline->FindRotationClosestToWorldLocation(Segment->Nodes[i]->GetActorLocation(), ESplineCoordinateSpace::World);
-			Segment->Nodes[i]->SetActorRotation(Rot);
 		}
 	}
 	else
 	{
 		Node->SetActorLocation(Location);
 		Segment->SetSplinePoint(Node->Index, Node->GetActorLocation());
-		FRotator Rot = Segment->Spline->FindRotationClosestToWorldLocation(Location, ESplineCoordinateSpace::World);
-		Node->SetActorRotation(Rot);
 	}
 	UpdateSegment(Segment);
 }
@@ -237,7 +230,14 @@ void AHair::UpdateSegment(AHairSegment* InSegment)
 	InSegment->ProceduralMesh->ClearAllMeshSections();
 	ClearMeshData(InSegment);
 
-	//Populate new data
+	// Update node rotations to match spline
+	for (int i = 0; i < InSegment->Spline->GetNumberOfSplinePoints(); i++)
+	{
+		FRotator Rot = InSegment->Spline->GetRotationAtSplinePoint(i, ESplineCoordinateSpace::World);
+		InSegment->Nodes[i]->SetActorRotation(Rot);
+	}
+
+	// Populate new data
 	if (!MiddleMeshData) return;
 	for (int i = 0; i <= InSegment->NumSegments; i++)
 	{
