@@ -61,9 +61,6 @@ public:
 	// Sets default values for this actor's properties
 	AHairSegment();
 
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
 	UFUNCTION(BlueprintCallable, Category = "Spline Methods")
 	void AddSplinePoint(FVector Location);
 

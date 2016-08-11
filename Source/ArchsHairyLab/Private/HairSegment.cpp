@@ -53,9 +53,3 @@ void AHairSegment::SetSegmentMaterial(int Index, UMaterialInterface* InMaterial)
 	if (InMaterial)
 		ProceduralMesh->SetMaterial(0, InMaterial);
 }
-
-// Called when the game starts or when spawned
-void AHairSegment::BeginPlay()
-{
-	Super::BeginPlay();
-}
