@@ -485,20 +485,35 @@ void AHair::DeselectAllNodes()
 	AMyPlayerController* Controller = GetController();
 	if (!Controller) return;
 
-	int i = 0;
+	int i = 0, n = 100;
 	// Use bounded while to prevent 
-	while (Controller->TargetNodes.Num() > 0 && i < 100)
+	while (Controller->TargetNodes.Num() > 0 && i < n)
 	{
 		DeselectNode(Controller->TargetNodes[0]);
 		i++;
 	}
-	//if (i == 100) { //Notify user }
+	if (i == n) UE_LOG(LogTemp, Warning, TEXT("Max %d loop capacity reached"), n);
 }
 
-void AHair::DeleteNode(AHairNode* Node)
+void AHair::RemoveNode(AHairNode* Node)
 {
-	Node->Segment->Spline->RemoveSplinePoint(Node->Index);
+	// Remove node from segment and update indices
+	AHairSegment* Segment = Node->Segment;
+	Segment->Nodes.Remove(Node);
+	for (int i = 0; i < Segment->Nodes.Num(); i++)
+	{
+		Segment->Nodes[i]->Index = i;
+	}
+	// Reform spline
+	Segment->Spline->ClearSplinePoints();
+	for (int i = 0; i < Segment->Nodes.Num(); i++)
+	{
+		Segment->Spline->AddSplinePoint(Segment->Nodes[i]->GetActorLocation(), ESplineCoordinateSpace::World);
+		Segment->Spline->SetUpVectorAtSplinePoint(i, Segment->Nodes[i]->GetActorUpVector(), ESplineCoordinateSpace::World);
+	}
+	//Node->Segment->Spline->RemoveSplinePoint(Node->Index);
 	Node->Destroy();
+	UpdateSegment(Segment);
 }
 
 void AHair::SetNodeVisibility(AHairSegment* Segment, bool IsVisible)
@@ -539,14 +554,14 @@ void AHair::DeselectAllSegments()
 	// Disable extend mode
 	Controller->IsExtending = false;
 
-	int i = 0;
+	int i = 0, n = 100;
 	// Use bounded while to prevent 
-	while (Controller->TargetSegments.Num() > 0 && i < 100)
+	while (Controller->TargetSegments.Num() > 0 && i < n)
 	{
 		DeselectSegment(Controller->TargetSegments[0]);
 		i++;
 	}
-	//if (i == 100) { //Notify user }
+	if (i == n) UE_LOG(LogTemp, Warning, TEXT("Max %d loop capacity reached"), n);
 }
 
 void AHair::RemoveSegment(AHairSegment* Segment)
@@ -565,12 +580,22 @@ void AHair::RemoveSelected()
 {
 	AMyPlayerController* Controller = GetController();
 	if (!Controller) return;
-	for (int i = 0; i < Controller->TargetSegments.Num(); i++)
+
+	int i = 0, n = 100;
+	if (Controller->TargetNodes.Num() > 0)
 	{
-		AHairSegment* Segment = Controller->TargetSegments[i];
-		RemoveSegment(Segment);
+		for (int i = 0; i < Controller->TargetNodes.Num(); i++)
+			RemoveNode(Controller->TargetNodes[i]);
 	}
-	Controller->TargetSegments.Empty();
+	else
+	{
+		while (Controller->TargetSegments.Num() > 0 && i < 100)
+		{
+			RemoveSegment(Controller->TargetSegments[0]);
+			i++;
+		}
+	}
+	if (i == n) UE_LOG(LogTemp, Warning, TEXT("Max %d loop capacity reached"), n);
 }
 
 void AHair::SetSelectedSegmentXWidth(float InVal)

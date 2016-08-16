@@ -134,7 +134,7 @@ public:
 	void SetNodeVisibility(AHairSegment* Segment, bool IsVisible);
 
 	UFUNCTION(BlueprintCallable, Category = "Node")
-	void DeleteNode(AHairNode* Node);
+	void RemoveNode(AHairNode* Node);
 
 	//// SEGMENT ////
 
