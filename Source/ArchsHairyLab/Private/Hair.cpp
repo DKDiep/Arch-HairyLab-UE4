@@ -495,6 +495,12 @@ void AHair::DeselectAllNodes()
 	//if (i == 100) { //Notify user }
 }
 
+void AHair::DeleteNode(AHairNode* Node)
+{
+	Node->Segment->Spline->RemoveSplinePoint(Node->Index);
+	Node->Destroy();
+}
+
 void AHair::SetNodeVisibility(AHairSegment* Segment, bool IsVisible)
 {
 	for (int i = 0; i < Segment->Nodes.Num(); i++)

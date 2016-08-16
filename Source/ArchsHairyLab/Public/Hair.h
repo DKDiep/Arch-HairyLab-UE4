@@ -121,60 +121,63 @@ public:
 	
 	//// NODE ////
 
-	UFUNCTION(BlueprintCallable, Category = "Selection")
+	UFUNCTION(BlueprintCallable, Category = "Node")
 	void SelectNode(AHairNode* Node);
 
-	UFUNCTION(BlueprintCallable, Category = "Selection")
+	UFUNCTION(BlueprintCallable, Category = "Node")
 	void DeselectNode(AHairNode* Node);
 
-	UFUNCTION(BlueprintCallable, Category = "Selection")
+	UFUNCTION(BlueprintCallable, Category = "Node")
 	void DeselectAllNodes();
 
-	UFUNCTION(BlueprintCallable, Category = "Selection")
+	UFUNCTION(BlueprintCallable, Category = "Node")
 	void SetNodeVisibility(AHairSegment* Segment, bool IsVisible);
+
+	UFUNCTION(BlueprintCallable, Category = "Node")
+	void DeleteNode(AHairNode* Node);
 
 	//// SEGMENT ////
 
-	UFUNCTION(BlueprintCallable, Category = "Selection")
+	UFUNCTION(BlueprintCallable, Category = "Segment")
 	void SetSelectedSegmentXWidth(float InVal);
 
-	UFUNCTION(BlueprintCallable, Category = "Selection")
+	UFUNCTION(BlueprintCallable, Category = "Segment")
 	void SetSelectedSegmentFallOff(float InVal);
 
-	UFUNCTION(BlueprintCallable, Category = "Selection")
+	UFUNCTION(BlueprintCallable, Category = "Segment")
 	void SetSelectedQuality(float InVal);
 
-	UFUNCTION(BlueprintCallable, Category = "Selection")
+	UFUNCTION(BlueprintCallable, Category = "Segment")
 	void SelectSegment(AHairSegment* Segment);
 
-	UFUNCTION(BlueprintCallable, Category = "Selection")
+	UFUNCTION(BlueprintCallable, Category = "Segment")
 	void RemoveSegment(AHairSegment* Segment);
 
-	UFUNCTION(BlueprintCallable, Category = "Selection")
+	UFUNCTION(BlueprintCallable, Category = "Segment")
 	void RemoveSelected();
 
-	UFUNCTION(BlueprintCallable, Category = "Selection")
+	UFUNCTION(BlueprintCallable, Category = "Segment")
 	void DeselectSegment(AHairSegment* Segment);
 
-	UFUNCTION(BlueprintCallable, Category = "Selection")
+	UFUNCTION(BlueprintCallable, Category = "Segment")
 	void DeselectAllSegments();
 
-	UFUNCTION(BlueprintCallable, Category = "Selection")
+	UFUNCTION(BlueprintCallable, Category = "Segment")
 	void DeselectAll();
 
 
 	//// LAYER ////
 
-	UFUNCTION(BlueprintCallable, Category = "Selection")
+	UFUNCTION(BlueprintCallable, Category = "Layer")
 	void SelectLayer(AHairLayer* Layer, bool IsAppend);
 
-	UFUNCTION(BlueprintCallable, Category = "Selection")
+	UFUNCTION(BlueprintCallable, Category = "Layer")
 	void RemoveLayer(AHairLayer* Layer);
 
-	UFUNCTION(BlueprintCallable, Category = "Selection")
+	UFUNCTION(BlueprintCallable, Category = "Layer")
 	void SetLayerLock(AHairLayer* Layer, bool IsLocked);
 
-	UFUNCTION(BlueprintCallable, Category = "Selection")
+	UFUNCTION(BlueprintCallable, Category = "Layer")
 	void SetLayerVisibility(AHairLayer* Layer, bool IssVisible);
 
 
