@@ -116,24 +116,29 @@ AHairSegment* AHair::SpawnSegment()
 	FActorSpawnParameters SpawnParams;
 	DeselectAll();
 	SelectSegment(World->SpawnActor<AHairSegment>(AHairSegment::StaticClass(), FVector(0.0f, 0.0f, 0.0f) , FRotator(0.0f), SpawnParams));
+
+	AHairSegment* Segment = Controller->TargetSegments[0];
+
 	// Setup new segment
 	FVector Loc = Controller->HitResult.Location + Controller->HitResult.Normal*10.0f;
-	Controller->TargetSegments[0]->AddSplinePoint(Loc);
-	Controller->TargetSegments[0]->Normals.Add(Controller->HitResult.Normal);
-	Controller->TargetSegments[0]->HairLayer = Controller->TargetLayer;
+	Segment->AddSplinePoint(Loc);
+	Segment->Normals.Add(Controller->HitResult.Normal);
+	Segment->HairLayer = Controller->TargetLayer;
 
 	// Set IsExtending
 	Controller->IsExtending = true;
 
-	SpawnNode(Controller, World, Loc);
-	UpdateSegment(Controller->TargetSegments[0]);
+	int Index = Segment->Spline->GetNumberOfSplinePoints() - 1;
+	FRotator Rot = Segment->Spline->GetRotationAtSplinePoint(Index, ESplineCoordinateSpace::World);
+	SpawnNode(Segment, Index, Loc, Rot);
+	UpdateSegment(Segment);
 
 	// Add hair segment to current layer
-	if (!Controller->TargetLayer) return Controller->TargetSegments[0];
+	if (!Controller->TargetLayer) return Segment;
 
-	Controller->TargetLayer->Segments.Add(Controller->TargetSegments[0]);
+	Controller->TargetLayer->Segments.Add(Segment);
 
-	return Controller->TargetSegments[0];
+	return Segment;
 }
 
 
@@ -144,6 +149,8 @@ void AHair::ExtendSegment()
 	AMyPlayerController* Controller = GetController();
 	if (!Controller || Controller->TargetSegments.Num() == 0) return;
 
+	AHairSegment* Segment = Controller->TargetSegments[0];
+
 	// Set controller cursor hit result
 	Controller->GetHitResultUnderCursorByChannel(UEngineTypes::ConvertToTraceType(ECC_Camera), true, Controller->HitResult);
 		
@@ -152,25 +159,27 @@ void AHair::ExtendSegment()
 	// Only proceed if hit head mesh
 	if (!Controller->HitResult.Actor->IsA(AHead::StaticClass())) return;
 
-	Controller->TargetSegments[0]->AddSplinePoint(Controller->HitResult.Location + Controller->HitResult.Normal*25.0f);
-	Controller->TargetSegments[0]->Spline->SetUpVectorAtSplinePoint(Controller->TargetSegments[0]->Spline->GetNumberOfSplinePoints()-1,
-																	Controller->HitResult.Normal, ESplineCoordinateSpace::World);
-	Controller->TargetSegments[0]->Normals.Add(Controller->HitResult.Normal);
+	FVector Loc = Controller->HitResult.Location + Controller->HitResult.Normal*25.0f;
 
-	SpawnNode(Controller, World, Controller->HitResult.Location + Controller->HitResult.Normal*25.0f);
-	UpdateSegment(Controller->TargetSegments[0]);
+	Segment->AddSplinePoint(Loc);
+	Segment->Spline->SetUpVectorAtSplinePoint(Controller->TargetSegments[0]->Spline->GetNumberOfSplinePoints()-1,
+																	Controller->HitResult.Normal, ESplineCoordinateSpace::World);
+	Segment->Normals.Add(Controller->HitResult.Normal);
+
+	int Index = Segment->Spline->GetNumberOfSplinePoints() - 1;
+	FRotator Rot = Segment->Spline->GetRotationAtSplinePoint(Index, ESplineCoordinateSpace::World);
+	SpawnNode(Segment, Index, Loc, Rot);
+	UpdateSegment(Segment);
 }
 
-AHairNode* AHair::SpawnNode(AMyPlayerController* Controller, UWorld* World, FVector Location)
+AHairNode* AHair::SpawnNode(AHairSegment* Segment, int Index, FVector Location, FRotator Rot)
 {
+	UWorld* World = GetWorld();
+	AMyPlayerController* Controller = GetController();
 	if (!Controller || !World) return NULL;
 
 	// Spawn node object
 	FActorSpawnParameters SpawnParams;
-	AHairSegment* Segment = Controller->TargetSegments[0];
-	int Index = Segment->Spline->GetNumberOfSplinePoints() - 1;
-	// Use spline direction and normal to get rotator
-	FRotator Rot = Segment->Spline->GetRotationAtSplinePoint(Index, ESplineCoordinateSpace::World);
 	AHairNode* Node = World->SpawnActor<AHairNode>(AHairNode::StaticClass(), Location, Rot, SpawnParams);
 	if (Node)
 	{
@@ -182,7 +191,12 @@ AHairNode* AHair::SpawnNode(AMyPlayerController* Controller, UWorld* World, FVec
 			Node->Segment = Segment;
 			Node->Index = Index;
 			// Add node to list for segment
-			Segment->Nodes.Add(Node);
+			Segment->Nodes.Insert(Node, Index);
+			// Update indices after
+			for (int i = Index+1; i < Segment->Nodes.Num(); i++)
+			{
+				Segment->Nodes[i]->Index = i;
+			}
 		}
 	}
 	return Node;
@@ -516,6 +530,46 @@ void AHair::RemoveNode(AHairNode* Node)
 	UpdateSegment(Segment);
 }
 
+void AHair::InsertNode()
+{
+	AMyPlayerController* Controller = GetController();
+	if (!Controller) return;
+
+	if (Controller->TargetNodes.Num() != 2)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Must select two nodes adjacent in index"));
+		return;
+	}
+
+	AHairNode* Node0 = Controller->TargetNodes[0];
+	AHairNode* Node1 = Controller->TargetNodes[1];
+
+	if (Node0->Segment != Node1->Segment)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Nodes do not belong to same segment"));
+		return;
+	}
+
+	//AHairNode* NodeA;
+	//AHairNode* NodeB;
+	if (!(Node0->Index+1 == Node1->Index || Node1->Index+1 == Node0->Index))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Non-adjacent indices"));
+		return;
+	}
+
+	AHairSegment* Segment = Node0->Segment;
+	USplineComponent* Spline = Segment->Spline;
+	float Distance = (Spline->GetDistanceAlongSplineAtSplinePoint(Node0->Index) + Spline->GetDistanceAlongSplineAtSplinePoint(Node1->Index)) / 2.0f;
+	int Index = FMath::Min(Node0->Index, Node1->Index)+1;
+	FVector Loc = Spline->GetLocationAtDistanceAlongSpline(Distance, ESplineCoordinateSpace::World);
+	FRotator Rot = FMath::Lerp(Node0->GetActorRotation(), Node1->GetActorRotation(), 0.5f);
+	SpawnNode(Segment, Index, Loc, Rot);
+	Spline->AddSplinePointAtIndex(Loc, Index, ESplineCoordinateSpace::World);
+	Spline->SetUpVectorAtSplinePoint(Index, UKismetMathLibrary::GetUpVector(Rot), ESplineCoordinateSpace::World);
+	UpdateSegment(Segment);
+}
+
 void AHair::SetNodeVisibility(AHairSegment* Segment, bool IsVisible)
 {
 	for (int i = 0; i < Segment->Nodes.Num(); i++)
@@ -581,7 +635,7 @@ void AHair::RemoveSelected()
 	AMyPlayerController* Controller = GetController();
 	if (!Controller) return;
 
-	int i = 0, n = 100;
+	int c = 0, n = 100;
 	if (Controller->TargetNodes.Num() > 0)
 	{
 		for (int i = 0; i < Controller->TargetNodes.Num(); i++)
@@ -589,13 +643,13 @@ void AHair::RemoveSelected()
 	}
 	else
 	{
-		while (Controller->TargetSegments.Num() > 0 && i < 100)
+		while (Controller->TargetSegments.Num() > 0 && c < 100)
 		{
 			RemoveSegment(Controller->TargetSegments[0]);
-			i++;
+			c++;
 		}
 	}
-	if (i == n) UE_LOG(LogTemp, Warning, TEXT("Max %d loop capacity reached"), n);
+	if (c == n) UE_LOG(LogTemp, Warning, TEXT("Max %d loop capacity reached"), n);
 }
 
 void AHair::SetSelectedSegmentXWidth(float InVal)

@@ -87,7 +87,7 @@ public:
 	void ExtendSegment();
 
 	UFUNCTION(BlueprintCallable, Category = "Procedural Mesh Generation")
-	AHairNode* SpawnNode(AMyPlayerController* Controller, UWorld* World, FVector Location);
+	AHairNode* SpawnNode(AHairSegment* Segment, int Index, FVector Location, FRotator Rot);
 
 	UFUNCTION(BlueprintCallable, Category = "Procedural Mesh Generation")
 	void SetNodeLocation(AHairNode* Node, FVector Location, bool IsPropToChildren);
@@ -135,6 +135,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Node")
 	void RemoveNode(AHairNode* Node);
+
+	UFUNCTION(BlueprintCallable, Category = "Node")
+	void InsertNode();
 
 	//// SEGMENT ////
 
