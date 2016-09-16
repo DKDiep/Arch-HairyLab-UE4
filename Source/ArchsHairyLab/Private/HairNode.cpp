@@ -17,7 +17,7 @@ AHairNode::AHairNode()
 	StaticMesh->SetCastShadow(false);
 	StaticMesh->SetCollisionProfileName(TEXT("BlockAllDynamic"));
 
-	static ConstructorHelpers::FObjectFinder<UMaterialInterface> TmpMat(TEXT("MaterialInterface'/Game/Meshes/defaultMat.defaultMat'"));
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> TmpMat(TEXT("Material'/Engine/BasicShapes/BasicShapeMaterial.BasicShapeMaterial'"));
 	if (TmpMat.Succeeded())
 		StaticMesh->SetMaterial(0, TmpMat.Object);
 }
